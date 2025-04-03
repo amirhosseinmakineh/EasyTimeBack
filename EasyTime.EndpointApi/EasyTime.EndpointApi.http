@@ -1,0 +1,6 @@
+@EasyTime.EndpointApi_HostAddress = http://localhost:5014
+
+GET {{EasyTime.EndpointApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
