@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EasyTime.Model\EasyTime.Model.csproj" />
+    <ProjectReference Include="..\EasyTime.Utilities\EasyTime.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

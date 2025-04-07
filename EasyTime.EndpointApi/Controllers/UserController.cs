@@ -1,7 +1,6 @@
 ﻿using EasyTime.Application.Contract.Dtos;
 using EasyTime.Application.Contract.IServices;
 using EasyTime.Utilities.Convertor;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyTime.EndpointApi.Controllers
@@ -21,10 +20,9 @@ namespace EasyTime.EndpointApi.Controllers
         public IActionResult Register(UserDto dto)
         {
             if (userService.Register(dto))
-            {
                 return Ok(dto);
-            }
-           var responce =  Result<UserDto>.Failure(new Error(StatusCodes.Status409Conflict.ToString(), "User Already Exist"));
+
+            var responce = Result<UserDto>.Failure("User Already Exist");
             return Ok(responce);
 
         }
@@ -32,8 +30,24 @@ namespace EasyTime.EndpointApi.Controllers
         [HttpPost("Login")]
         public IActionResult Login(UserLoginDto dto)
         {
-            userService.Login(dto);
-            return Ok(dto);
+            var result = userService.Login(dto);
+            if (result.IsSuccess)
+                return Ok(result);
+            return Ok(result);
+        }
+
+        [HttpPost("ForgotPassword")]
+        public IActionResult ForgotPassword(UserDto dto)
+        {
+            userService.ForgotPassword(dto);
+            return Ok();
+        }
+
+        [HttpPost("ChangePassword")]
+        public IActionResult ChangePassword(string password,Guid token)
+        {
+            var result = userService.ChangePassword(password,token);
+            return Ok(result);
         }
     }
 }
