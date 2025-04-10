@@ -43,7 +43,7 @@ namespace EasyTime.Application.Services
 
         public Result<bool> ForgotPassword(UserDto dto)
         {
-            var user = repository.GetAllEntities().FirstOrDefault(x => x.Email == dto.Email);
+            var user = GetAll().FirstOrDefault(x => x.Email == dto.Email && x.Password == dto.Password);
 
             if (user != null)
             {
@@ -52,7 +52,6 @@ namespace EasyTime.Application.Services
                 dto.Id = user.Id;
                 string changePasswordUrl = $"http://localhost:5107/User/ChangePassword/{dto.TokenForChangePassword}";
                 //emailService.SendEmailAsync(user.Email, "تغییر رمز عبور",changePasswordUrl);
-                DetachIfTracked(user);
                 Update(dto);
                 return Result<bool>.Success(true, "email send success");
             }

@@ -44,16 +44,5 @@ namespace EasyTime.InfraStracure.Repositories
         {
             context.SaveChanges();
         }
-
-        public void DetachIfTracked(Tentity entity)
-        {
-            var entry = context.ChangeTracker.Entries<Tentity>()
-                .FirstOrDefault(e => e.Entity != null && e.Entity.GetType() == typeof(Tentity) && context.Entry(e.Entity).Property("Id").CurrentValue.Equals(context.Entry(entity).Property("Id").CurrentValue));
-
-            if (entry != null)
-            {
-                entry.State = EntityState.Detached;
-            }
-        }
     }
 }
