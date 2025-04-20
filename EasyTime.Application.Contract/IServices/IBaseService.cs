@@ -9,6 +9,5 @@ namespace EasyTime.Application.Contract.IServices
         void Update(TDto dto);
         void Delete(Tkey id);
         List<TDto> GetAll();
-        void DetachIfTracked(Tentity tentity);
     }
 }

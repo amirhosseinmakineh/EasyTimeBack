@@ -10,7 +10,6 @@ namespace EasyTime.Model.IRepository
         Tentity GetById(Tkey id);
         IQueryable<Tentity> GetAllEntities();
         void SaveChanges();
-        public void DetachIfTracked(Tentity entity);
 
     }
 }

@@ -44,10 +44,5 @@ namespace EasyTime.Application.Services
             baseRepository.Update(entity);
             baseRepository.SaveChanges();
         }
-
-        public void DetachIfTracked(Tentity tentity)
-        {
-           baseRepository.DetachIfTracked(tentity);
-        }
     }
 }

@@ -22,6 +22,288 @@ namespace EasyTime.InfraStracure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("BusinessOwnerDay", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BusinessId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("BusinessOwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateObjectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdateEntityDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("BusinesOwnerDays");
+                });
+
+            modelBuilder.Entity("BusinessOwnerTime", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BusinessId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("BusinessOwnerDayId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreateObjectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("From")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsReserved")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan>("To")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("UpdateEntityDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinessId");
+
+                    b.HasIndex("BusinessOwnerDayId");
+
+                    b.ToTable("BusinesOwnerTimes");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinesCity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<Guid>("BusinesOwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateObjectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdateEntityDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BusinesCityes");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinesNeighberhood", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<Guid>("BusinesOwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("BusinesRegionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreateObjectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdateEntityDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinesRegionId");
+
+                    b.ToTable("BusinesNeighberhoodes");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinesRegion", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BusinesCityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("BusinesOwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateObjectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdateEntityDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinesCityId");
+
+                    b.ToTable("BusinesRegiones");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.Business", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<Guid>("BusinesOwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("BusinessOwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("CityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreateObjectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Logo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("NeighberhoodId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RegionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdateEntityDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinessOwnerId");
+
+                    b.ToTable("Businesses");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinessOwner", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<long>("BusinesCitiyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("BusinesNeighberhoodId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("BusinesRegionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("CityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreateObjectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Family")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("NeighberhoodId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RegionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdateEntityDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinesCitiyId");
+
+                    b.HasIndex("BusinesNeighberhoodId");
+
+                    b.HasIndex("BusinesRegionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BusinesOwners");
+                });
+
             modelBuilder.Entity("EasyTime.Model.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -37,6 +319,9 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.Property<DateTime?>("ExpireChangePasswordToken")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsBusinesOwner")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -58,6 +343,141 @@ namespace EasyTime.InfraStracure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("BusinessOwnerDay", b =>
+                {
+                    b.HasOne("EasyTime.Model.Models.Business", "Business")
+                        .WithMany("BusinessOwnerDays")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Business");
+                });
+
+            modelBuilder.Entity("BusinessOwnerTime", b =>
+                {
+                    b.HasOne("EasyTime.Model.Models.Business", "Business")
+                        .WithMany("BusinessOwnerTimes")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BusinessOwnerDay", "BusinessOwnerDay")
+                        .WithMany("BusinessOwnerTimes")
+                        .HasForeignKey("BusinessOwnerDayId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Business");
+
+                    b.Navigation("BusinessOwnerDay");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinesNeighberhood", b =>
+                {
+                    b.HasOne("EasyTime.Model.Models.BusinesRegion", "BusinesRegion")
+                        .WithMany("BusinesNeighberhoods")
+                        .HasForeignKey("BusinesRegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BusinesRegion");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinesRegion", b =>
+                {
+                    b.HasOne("EasyTime.Model.Models.BusinesCity", "BusinesCity")
+                        .WithMany("BusinesRegions")
+                        .HasForeignKey("BusinesCityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BusinesCity");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.Business", b =>
+                {
+                    b.HasOne("EasyTime.Model.Models.BusinessOwner", null)
+                        .WithMany("Busines")
+                        .HasForeignKey("BusinessOwnerId");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinessOwner", b =>
+                {
+                    b.HasOne("EasyTime.Model.Models.BusinesCity", "BusinesCitiy")
+                        .WithMany("BusinesOwners")
+                        .HasForeignKey("BusinesCitiyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EasyTime.Model.Models.BusinesNeighberhood", "BusinesNeighberhood")
+                        .WithMany("BusinesOwners")
+                        .HasForeignKey("BusinesNeighberhoodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EasyTime.Model.Models.BusinesRegion", "BusinesRegion")
+                        .WithMany("BusinesOwners")
+                        .HasForeignKey("BusinesRegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EasyTime.Model.Models.User", "User")
+                        .WithMany("BusinesOwners")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BusinesCitiy");
+
+                    b.Navigation("BusinesNeighberhood");
+
+                    b.Navigation("BusinesRegion");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BusinessOwnerDay", b =>
+                {
+                    b.Navigation("BusinessOwnerTimes");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinesCity", b =>
+                {
+                    b.Navigation("BusinesOwners");
+
+                    b.Navigation("BusinesRegions");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinesNeighberhood", b =>
+                {
+                    b.Navigation("BusinesOwners");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinesRegion", b =>
+                {
+                    b.Navigation("BusinesNeighberhoods");
+
+                    b.Navigation("BusinesOwners");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.Business", b =>
+                {
+                    b.Navigation("BusinessOwnerDays");
+
+                    b.Navigation("BusinessOwnerTimes");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinessOwner", b =>
+                {
+                    b.Navigation("Busines");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.User", b =>
+                {
+                    b.Navigation("BusinesOwners");
                 });
 #pragma warning restore 612, 618
         }
