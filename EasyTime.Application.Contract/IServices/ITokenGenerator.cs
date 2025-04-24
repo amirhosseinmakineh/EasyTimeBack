@@ -5,7 +5,7 @@ namespace EasyTime.Application.Contract.IServices
 {
     public interface ITokenGenerator
     {
-        string GenerateToken(User user);
-        ClaimsPrincipal ValidateToken(string token);
+        Task<string> GenerateToken(User user);
+        Task<ClaimsPrincipal> ValidateToken(string token);
     }
 }

@@ -17,9 +17,9 @@ namespace EasyTime.EndpointApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(UserDto dto)
+        public async Task<IActionResult> Register(UserDto dto)
         {
-            if (userService.Register(dto))
+            if (await userService.Register(dto))
                 return Ok(dto);
 
             var responce = Result<UserDto>.Failure("User Already Exist");
@@ -28,25 +28,25 @@ namespace EasyTime.EndpointApi.Controllers
         }
 
         [HttpPost("Login")]
-        public IActionResult Login(UserLoginDto dto)
+        public async Task<IActionResult> Login(UserLoginDto dto)
         {
-            var result = userService.Login(dto);
+            var result = await userService.Login(dto);
             if (result.IsSuccess)
                 return Ok(result);
             return Ok(result);
         }
 
         [HttpPost("ForgotPassword")]
-        public IActionResult ForgotPassword(UserDto dto)
+        public async Task<IActionResult> ForgotPassword(UserDto dto)
         {
-            userService.ForgotPassword(dto);
+           await userService.ForgotPassword(dto);
             return Ok();
         }
 
         [HttpPost("ChangePassword")]
-        public IActionResult ChangePassword(string password,Guid token)
+        public async Task<IActionResult> ChangePassword(string password,Guid token)
         {
-            var result = userService.ChangePassword(password,token);
+            var result = await userService.ChangePassword(password,token);
             return Ok(result);
         }
     }

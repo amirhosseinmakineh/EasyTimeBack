@@ -5,9 +5,9 @@ namespace EasyTime.Application.Contract.IServices
 {
     public interface IUserService
     {
-        bool Register(UserDto dto);
-        Result<string> Login(UserLoginDto dto);
-        Result<bool> ForgotPassword(UserDto dto);
-        Result<string> ChangePassword(string newPassword, Guid expireToken);
+        Task<bool> Register(UserDto dto);
+        Task<Result<string>> Login(UserLoginDto dto);
+        Task<Result<bool>> ForgotPassword(UserDto dto);
+        Task<Result<string>> ChangePassword(string newPassword, Guid expireToken);
     }
 }

@@ -17,32 +17,32 @@ namespace EasyTime.Application.Services
             this.mapper = mapper;
         }
 
-        public virtual void Create(TDto dto)
+        public virtual async Task Create(TDto dto)
         {
             var entity = mapper.Map<Tentity>(dto);
-            baseRepository.Add(entity);
-            baseRepository.SaveChanges();
+           await baseRepository.Add(entity);
+           await baseRepository.SaveChanges();
         }
 
-        public virtual void Delete(Tkey id)
+        public virtual async Task Delete(Tkey id)
         {
-            baseRepository.Delete(id);
-            baseRepository.SaveChanges();
+           await baseRepository.Delete(id);
+           await baseRepository.SaveChanges();
         }
 
-        public virtual List<TDto> GetAll()
+        public virtual async Task<List<TDto>> GetAll()
         {
-            var entity = baseRepository.GetAllEntities();
-           var result =  mapper.Map<List<TDto>>(entity);
-            baseRepository.SaveChanges();
+            var entities = await baseRepository.GetAllEntities(); // ✅ await
+            var result = mapper.Map<List<TDto>>(entities);        // ✅ دسترسی به لیست
             return result;
         }
 
-        public void Update(TDto dto)
+
+        public async Task Update(TDto dto)
         {
             var entity = mapper.Map<Tentity>(dto);
-            baseRepository.Update(entity);
-            baseRepository.SaveChanges();
+           await baseRepository.Update(entity);
+           await baseRepository.SaveChanges();
         }
     }
 }

@@ -9,4 +9,5 @@ public class BusinessOwnerTime : BaseEntity<long>
     public bool IsReserved { get; set; } = false;
     public BusinessOwnerDay BusinessOwnerDay { get; set; }
     public Business Business { get; set; }
+    public ICollection<Reserve> Reserves { get; set; }
 }

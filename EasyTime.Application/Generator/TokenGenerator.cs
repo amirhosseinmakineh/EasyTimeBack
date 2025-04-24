@@ -9,7 +9,7 @@ namespace EasyTime.Application.Generator
 {
     public class TokenGenerator : ITokenGenerator
     {
-        public string GenerateToken(User user)
+        public async Task<string> GenerateToken(User user)
         {
             var claims = new List<Claim>()
             {
@@ -30,11 +30,11 @@ namespace EasyTime.Application.Generator
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var result = tokenHandler.WriteToken(token);
-            ValidateToken(result);
+           await ValidateToken(result);
             return result;
         }
 
-        public ClaimsPrincipal ValidateToken(string token)
+        public async Task<ClaimsPrincipal> ValidateToken(string token)
         {
             var parameters = new TokenValidationParameters()
             {
@@ -46,7 +46,7 @@ namespace EasyTime.Application.Generator
             };
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             tokenHandler.CanReadToken(token);
-            return tokenHandler.ValidateToken(token, parameters, out SecurityToken securityToken);
+            return  tokenHandler.ValidateToken(token, parameters, out SecurityToken securityToken);
         }
     }
 }

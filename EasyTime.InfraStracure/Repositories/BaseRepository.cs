@@ -14,33 +14,33 @@ namespace EasyTime.InfraStracure.Repositories
             this.context = context;
         }
 
-        public void Add(Tentity tentity)
+        public async Task Add(Tentity tentity)
         {
             context.Set<Tentity>().Add(tentity);
         }
 
-        public void Delete(Tkey id)
+        public async Task Delete(Tkey id)
         {
-           var entity =  GetById(id);
+           var entity = await GetById(id);
             entity.IsDelete = true;
         }
 
-        public IQueryable<Tentity> GetAllEntities()
+        public async Task<IQueryable<Tentity>> GetAllEntities()
         {
             return context.Set<Tentity>();
         }
 
-        public Tentity GetById(Tkey id)
+        public async Task<Tentity> GetById(Tkey id)
         {
             return context.Set<Tentity>().Find(id);
         }
 
-        public void Update(Tentity tentity)
+        public async Task Update(Tentity tentity)
         {
             context.Set<Tentity>().Update(tentity);
         }
 
-        public void SaveChanges()
+        public async Task SaveChanges()
         {
             context.SaveChanges();
         }

@@ -2,9 +2,12 @@
 using EasyTime.Application.Contract.Mapper;
 using EasyTime.Application.Generator;
 using EasyTime.Application.Services;
+using EasyTime.Application.Validator;
 using EasyTime.InfraStracure.Context;
 using EasyTime.InfraStracure.Repositories;
 using EasyTime.Model.IRepository;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -54,12 +57,16 @@ builder.Services.AddSwaggerGen(c =>
                 });
 });
 builder.Services.AddControllers();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidation>();
+builder.Services.AddValidatorsFromAssemblyContaining<LoginUserValidation>();
+builder.Services.AddValidatorsFromAssemblyContaining<ForgotPasswordValidation>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
 builder.Services.AddScoped(typeof(IBaseService<,,>), typeof(BaseService<,,>));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBusinesService, BusinesService>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
+
 builder.Services.AddDbContext<EasyTimeContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("EasyTime"));

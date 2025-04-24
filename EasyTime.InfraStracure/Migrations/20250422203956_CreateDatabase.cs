@@ -12,6 +12,23 @@ namespace EasyTime.InfraStracure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "BusinesCityes",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BusinesOwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    CreateObjectDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateEntityDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusinesCityes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -29,81 +46,6 @@ namespace EasyTime.InfraStracure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "BusinesOwners",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Family = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Age = table.Column<int>(type: "int", nullable: false),
-                    ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
-                    CreateObjectDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateEntityDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BusinesOwners", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_BusinesOwners_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "BusinesCityes",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BusinesOwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
-                    CreateObjectDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateEntityDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BusinesCityes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_BusinesCityes_BusinesOwners_BusinesOwnerId",
-                        column: x => x.BusinesOwnerId,
-                        principalTable: "BusinesOwners",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Businesses",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BusinesOwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Logo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CityId = table.Column<long>(type: "bigint", nullable: false),
-                    RegionId = table.Column<long>(type: "bigint", nullable: false),
-                    NeighberhoodId = table.Column<long>(type: "bigint", nullable: false),
-                    BusinessOwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
-                    CreateObjectDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateEntityDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Businesses", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Businesses_BusinesOwners_BusinessOwnerId",
-                        column: x => x.BusinessOwnerId,
-                        principalTable: "BusinesOwners",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -127,11 +69,127 @@ namespace EasyTime.InfraStracure.Migrations
                         column: x => x.BusinesCityId,
                         principalTable: "BusinesCityes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BusinesNeighberhoodes",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BusinesOwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BusinesRegionId = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    CreateObjectDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateEntityDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusinesNeighberhoodes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BusinesRegiones_BusinesOwners_BusinesOwnerId",
-                        column: x => x.BusinesOwnerId,
+                        name: "FK_BusinesNeighberhoodes_BusinesRegiones_BusinesRegionId",
+                        column: x => x.BusinesRegionId,
+                        principalTable: "BusinesRegiones",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BusinesOwners",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CityId = table.Column<long>(type: "bigint", nullable: false),
+                    RegionId = table.Column<long>(type: "bigint", nullable: false),
+                    NeighberhoodId = table.Column<long>(type: "bigint", nullable: false),
+                    Family = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Age = table.Column<int>(type: "int", nullable: false),
+                    ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BusinesCitiyId = table.Column<long>(type: "bigint", nullable: false),
+                    BusinesRegionId = table.Column<long>(type: "bigint", nullable: false),
+                    BusinesNeighberhoodId = table.Column<long>(type: "bigint", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    CreateObjectDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateEntityDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusinesOwners", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BusinesOwners_BusinesCityes_BusinesCitiyId",
+                        column: x => x.BusinesCitiyId,
+                        principalTable: "BusinesCityes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_BusinesOwners_BusinesNeighberhoodes_BusinesNeighberhoodId",
+                        column: x => x.BusinesNeighberhoodId,
+                        principalTable: "BusinesNeighberhoodes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_BusinesOwners_BusinesRegiones_BusinesRegionId",
+                        column: x => x.BusinesRegionId,
+                        principalTable: "BusinesRegiones",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_BusinesOwners_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Businesses",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BusinesOwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Logo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CityId = table.Column<long>(type: "bigint", nullable: false),
+                    RegionId = table.Column<long>(type: "bigint", nullable: false),
+                    NeighberhoodId = table.Column<long>(type: "bigint", nullable: false),
+                    BusinessOwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BusinesCityId = table.Column<long>(type: "bigint", nullable: false),
+                    BusinesRegionId = table.Column<long>(type: "bigint", nullable: false),
+                    BusinesNeighberhoodId = table.Column<long>(type: "bigint", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    CreateObjectDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateEntityDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Businesses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Businesses_BusinesCityes_BusinesCityId",
+                        column: x => x.BusinesCityId,
+                        principalTable: "BusinesCityes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Businesses_BusinesNeighberhoodes_BusinesNeighberhoodId",
+                        column: x => x.BusinesNeighberhoodId,
+                        principalTable: "BusinesNeighberhoodes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Businesses_BusinesOwners_BusinessOwnerId",
+                        column: x => x.BusinessOwnerId,
                         principalTable: "BusinesOwners",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Businesses_BusinesRegiones_BusinesRegionId",
+                        column: x => x.BusinesRegionId,
+                        principalTable: "BusinesRegiones",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });
@@ -161,36 +219,6 @@ namespace EasyTime.InfraStracure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BusinesNeighberhoodes",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BusinesOwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BusinesRegionId = table.Column<long>(type: "bigint", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
-                    CreateObjectDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateEntityDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BusinesNeighberhoodes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_BusinesNeighberhoodes_BusinesOwners_BusinesOwnerId",
-                        column: x => x.BusinesOwnerId,
-                        principalTable: "BusinesOwners",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_BusinesNeighberhoodes_BusinesRegiones_BusinesRegionId",
-                        column: x => x.BusinesRegionId,
-                        principalTable: "BusinesRegiones",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "BusinesOwnerTimes",
                 columns: table => new
                 {
@@ -213,7 +241,7 @@ namespace EasyTime.InfraStracure.Migrations
                         column: x => x.BusinessOwnerDayId,
                         principalTable: "BusinesOwnerDays",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction );
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_BusinesOwnerTimes_Businesses_BusinessId",
                         column: x => x.BusinessId,
@@ -221,16 +249,6 @@ namespace EasyTime.InfraStracure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BusinesCityes_BusinesOwnerId",
-                table: "BusinesCityes",
-                column: "BusinesOwnerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BusinesNeighberhoodes_BusinesOwnerId",
-                table: "BusinesNeighberhoodes",
-                column: "BusinesOwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BusinesNeighberhoodes_BusinesRegionId",
@@ -241,6 +259,21 @@ namespace EasyTime.InfraStracure.Migrations
                 name: "IX_BusinesOwnerDays_BusinessId",
                 table: "BusinesOwnerDays",
                 column: "BusinessId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusinesOwners_BusinesCitiyId",
+                table: "BusinesOwners",
+                column: "BusinesCitiyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusinesOwners_BusinesNeighberhoodId",
+                table: "BusinesOwners",
+                column: "BusinesNeighberhoodId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusinesOwners_BusinesRegionId",
+                table: "BusinesOwners",
+                column: "BusinesRegionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BusinesOwners_UserId",
@@ -263,9 +296,19 @@ namespace EasyTime.InfraStracure.Migrations
                 column: "BusinesCityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BusinesRegiones_BusinesOwnerId",
-                table: "BusinesRegiones",
-                column: "BusinesOwnerId");
+                name: "IX_Businesses_BusinesCityId",
+                table: "Businesses",
+                column: "BusinesCityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Businesses_BusinesNeighberhoodId",
+                table: "Businesses",
+                column: "BusinesNeighberhoodId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Businesses_BusinesRegionId",
+                table: "Businesses",
+                column: "BusinesRegionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Businesses_BusinessOwnerId",
@@ -277,19 +320,10 @@ namespace EasyTime.InfraStracure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BusinesNeighberhoodes");
-
-            migrationBuilder.DropTable(
                 name: "BusinesOwnerTimes");
 
             migrationBuilder.DropTable(
-                name: "BusinesRegiones");
-
-            migrationBuilder.DropTable(
                 name: "BusinesOwnerDays");
-
-            migrationBuilder.DropTable(
-                name: "BusinesCityes");
 
             migrationBuilder.DropTable(
                 name: "Businesses");
@@ -298,7 +332,16 @@ namespace EasyTime.InfraStracure.Migrations
                 name: "BusinesOwners");
 
             migrationBuilder.DropTable(
+                name: "BusinesNeighberhoodes");
+
+            migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "BusinesRegiones");
+
+            migrationBuilder.DropTable(
+                name: "BusinesCityes");
         }
     }
 }

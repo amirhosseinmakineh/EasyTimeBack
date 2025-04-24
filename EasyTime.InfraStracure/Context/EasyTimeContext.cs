@@ -17,6 +17,7 @@ namespace EasyTime.InfraStracure.Context
         public DbSet<BusinessOwnerTime> BusinesOwnerTimes { get; set; }
         public DbSet<BusinesRegion> BusinesRegiones { get; set; }
         public DbSet<Business> Businesses { get; set; }
+        public DbSet<Reserve> Reserves { get; set; }
 
 
     }

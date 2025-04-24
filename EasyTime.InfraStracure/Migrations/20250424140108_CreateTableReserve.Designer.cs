@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTime.InfraStracure.Migrations
 {
     [DbContext(typeof(EasyTimeContext))]
-    [Migration("20250418151138_CreateDatabase")]
-    partial class CreateDatabase
+    [Migration("20250424140108_CreateTableReserve")]
+    partial class CreateTableReserve
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -125,8 +125,6 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BusinesOwnerId");
-
                     b.ToTable("BusinesCityes");
                 });
 
@@ -158,8 +156,6 @@ namespace EasyTime.InfraStracure.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BusinesOwnerId");
 
                     b.HasIndex("BusinesRegionId");
 
@@ -197,8 +193,6 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.HasIndex("BusinesCityId");
 
-                    b.HasIndex("BusinesOwnerId");
-
                     b.ToTable("BusinesRegiones");
                 });
 
@@ -211,9 +205,6 @@ namespace EasyTime.InfraStracure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<Guid>("BusinesOwnerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("BusinessOwnerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<long>("CityId")
@@ -248,7 +239,13 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BusinessOwnerId");
+                    b.HasIndex("BusinesOwnerId");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("NeighberhoodId");
+
+                    b.HasIndex("RegionId");
 
                     b.ToTable("Businesses");
                 });
@@ -261,6 +258,18 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
+
+                    b.Property<long>("BusinesCitiyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("BusinesNeighberhoodId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("BusinesRegionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("CityId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreateObjectDate")
                         .HasColumnType("datetime2");
@@ -276,6 +285,12 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
+                    b.Property<long>("NeighberhoodId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RegionId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime>("UpdateEntityDate")
                         .HasColumnType("datetime2");
 
@@ -284,9 +299,50 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BusinesCitiyId");
+
+                    b.HasIndex("BusinesNeighberhoodId");
+
+                    b.HasIndex("BusinesRegionId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("BusinesOwners");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.Reserve", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BusinessOwnerDayId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("BusinessOwnerTimeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreateObjectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdateEntityDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinessOwnerDayId");
+
+                    b.HasIndex("BusinessOwnerTimeId");
+
+                    b.ToTable("Reserves");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.User", b =>
@@ -360,32 +416,13 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Navigation("BusinessOwnerDay");
                 });
 
-            modelBuilder.Entity("EasyTime.Model.Models.BusinesCity", b =>
-                {
-                    b.HasOne("EasyTime.Model.Models.BusinessOwner", "BusinesOwner")
-                        .WithMany("BusinesCities")
-                        .HasForeignKey("BusinesOwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BusinesOwner");
-                });
-
             modelBuilder.Entity("EasyTime.Model.Models.BusinesNeighberhood", b =>
                 {
-                    b.HasOne("EasyTime.Model.Models.BusinessOwner", "BusinesOwner")
-                        .WithMany("BusinesNeighberhoods")
-                        .HasForeignKey("BusinesOwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EasyTime.Model.Models.BusinesRegion", "BusinesRegion")
                         .WithMany("BusinesNeighberhoods")
                         .HasForeignKey("BusinesRegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("BusinesOwner");
 
                     b.Navigation("BusinesRegion");
                 });
@@ -398,48 +435,127 @@ namespace EasyTime.InfraStracure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EasyTime.Model.Models.BusinessOwner", "BusinesOwner")
-                        .WithMany("BusinesRegions")
+                    b.Navigation("BusinesCity");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.Business", b =>
+                {
+                    b.HasOne("EasyTime.Model.Models.BusinessOwner", "BusinessOwner")
+                        .WithMany("Busines")
                         .HasForeignKey("BusinesOwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EasyTime.Model.Models.BusinesCity", "BusinesCity")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EasyTime.Model.Models.BusinesNeighberhood", "BusinesNeighberhood")
+                        .WithMany()
+                        .HasForeignKey("NeighberhoodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EasyTime.Model.Models.BusinesRegion", "BusinesRegion")
+                        .WithMany()
+                        .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("BusinesCity");
 
-                    b.Navigation("BusinesOwner");
-                });
+                    b.Navigation("BusinesNeighberhood");
 
-            modelBuilder.Entity("EasyTime.Model.Models.Business", b =>
-                {
-                    b.HasOne("EasyTime.Model.Models.BusinessOwner", null)
-                        .WithMany("Busines")
-                        .HasForeignKey("BusinessOwnerId");
+                    b.Navigation("BusinesRegion");
+
+                    b.Navigation("BusinessOwner");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.BusinessOwner", b =>
                 {
+                    b.HasOne("EasyTime.Model.Models.BusinesCity", "BusinesCitiy")
+                        .WithMany("BusinesOwners")
+                        .HasForeignKey("BusinesCitiyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EasyTime.Model.Models.BusinesNeighberhood", "BusinesNeighberhood")
+                        .WithMany("BusinesOwners")
+                        .HasForeignKey("BusinesNeighberhoodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EasyTime.Model.Models.BusinesRegion", "BusinesRegion")
+                        .WithMany("BusinesOwners")
+                        .HasForeignKey("BusinesRegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("EasyTime.Model.Models.User", "User")
                         .WithMany("BusinesOwners")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("BusinesCitiy");
+
+                    b.Navigation("BusinesNeighberhood");
+
+                    b.Navigation("BusinesRegion");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.Reserve", b =>
+                {
+                    b.HasOne("BusinessOwnerDay", "BusinessOwnerDay")
+                        .WithMany("Reserves")
+                        .HasForeignKey("BusinessOwnerDayId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BusinessOwnerTime", "BusinessOwnerTime")
+                        .WithMany("Reserves")
+                        .HasForeignKey("BusinessOwnerTimeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BusinessOwnerDay");
+
+                    b.Navigation("BusinessOwnerTime");
                 });
 
             modelBuilder.Entity("BusinessOwnerDay", b =>
                 {
                     b.Navigation("BusinessOwnerTimes");
+
+                    b.Navigation("Reserves");
+                });
+
+            modelBuilder.Entity("BusinessOwnerTime", b =>
+                {
+                    b.Navigation("Reserves");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.BusinesCity", b =>
                 {
+                    b.Navigation("BusinesOwners");
+
                     b.Navigation("BusinesRegions");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.BusinesNeighberhood", b =>
+                {
+                    b.Navigation("BusinesOwners");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.BusinesRegion", b =>
                 {
                     b.Navigation("BusinesNeighberhoods");
+
+                    b.Navigation("BusinesOwners");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.Business", b =>
@@ -452,12 +568,6 @@ namespace EasyTime.InfraStracure.Migrations
             modelBuilder.Entity("EasyTime.Model.Models.BusinessOwner", b =>
                 {
                     b.Navigation("Busines");
-
-                    b.Navigation("BusinesCities");
-
-                    b.Navigation("BusinesNeighberhoods");
-
-                    b.Navigation("BusinesRegions");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.User", b =>

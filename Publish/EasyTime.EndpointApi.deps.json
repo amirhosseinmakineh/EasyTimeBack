@@ -868,6 +868,7 @@
           "EasyTime.Utilities": "1.0.0",
           "JWT": "11.0.0",
           "MailKit": "4.11.0",
+          "Microsoft.EntityFrameworkCore": "9.0.3",
           "Microsoft.IdentityModel.Tokens": "6.35.0",
           "System.IdentityModel.Tokens.Jwt": "6.35.0"
         },
