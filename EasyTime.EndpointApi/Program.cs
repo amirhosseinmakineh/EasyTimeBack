@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(c =>
     c.AddPolicy("CorsPolicy", builder =>
-        builder.WithOrigins("http://localhost:3000") // اسلش حذف شده
+        builder.WithOrigins("http://localhost:3000") 
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials()
@@ -62,7 +62,6 @@ builder.Services.AddValidatorsFromAssemblyContaining<LoginUserValidation>();
 builder.Services.AddValidatorsFromAssemblyContaining<ForgotPasswordValidation>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
-builder.Services.AddScoped(typeof(IBaseService<,,>), typeof(BaseService<,,>));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBusinesService, BusinesService>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
@@ -80,7 +79,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 }
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles(); // حتما اضافه باشه
 
 app.UseAuthorization();
 

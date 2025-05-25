@@ -2,6 +2,7 @@
 using EasyTime.Application.Contract.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace EasyTime.EndpointApi.Controllers
 {
@@ -16,16 +17,38 @@ namespace EasyTime.EndpointApi.Controllers
             this.businesService = businesService;
         }
 
-        [HttpGet]
-        public IActionResult FilterBusinesByPlace(long businesCityId)
+        [HttpGet("Cities")]
+        public async Task<IActionResult> GetAllCities()
         {
-            var result = businesService.FilterBusinesByPlace(businesCityId);
+            var result = await businesService.GetAllCitiesAsync();
             return Ok(result);
         }
-        [HttpPost]
+
+        [HttpGet]
+        public async Task<IActionResult> FilterBusinesByPlace(long? businessCityId,long? regionId)
+        {
+            var result = await businesService.FilterBusinesByPlace(businessCityId,regionId);
+            return Ok(result);
+        }
+
+        [HttpGet("Bisineses")]
+        public IActionResult GetBusinesesByNeighberhood(long neighberhoodId)
+        {
+             var result = businesService.FilterBusines(neighberhoodId);
+            return Ok(result);
+        } 
+
+        [HttpPost("Reserve")]
         public async Task<IActionResult> Reserve(ReserveDto dto)
         {
           var result =  await businesService.Reserve(dto);
+            return Ok(result);
+        }
+
+        [HttpGet("BusinessDetail")]
+        public async Task<IActionResult> BusinessDetail(long businessId)
+        {
+            var result = await businesService.GetBusinessDetail(businessId);
             return Ok(result);
         }
     }

@@ -4,7 +4,7 @@ namespace EasyTime.Model.Models
 {
     public class Business : BaseEntity<long>
     {
-        public Guid BusinesOwnerId  { get; set; }
+        public Guid UserId  { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Logo { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
@@ -12,7 +12,7 @@ namespace EasyTime.Model.Models
         public long RegionId { get; set; }
         public long NeighberhoodId { get; set; }
         [ForeignKey("BusinesOwnerId")]
-        public BusinessOwner BusinessOwner { get; set; }
+        public User User { get; set; }
         [ForeignKey("CityId")]
         public BusinesCity BusinesCity { get; set; }
         [ForeignKey("RegionId")]

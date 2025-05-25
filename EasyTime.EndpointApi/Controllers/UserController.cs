@@ -1,6 +1,7 @@
 ﻿using EasyTime.Application.Contract.Dtos;
 using EasyTime.Application.Contract.IServices;
 using EasyTime.Utilities.Convertor;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyTime.EndpointApi.Controllers
@@ -20,7 +21,10 @@ namespace EasyTime.EndpointApi.Controllers
         public async Task<IActionResult> Register(UserDto dto)
         {
             if (await userService.Register(dto))
-                return Ok(dto);
+            {
+                var response = Result<UserDto>.Success(dto, "ثبت نام با موفقیت انجام شد");
+                return Ok(response);
+            }
 
             var responce = Result<UserDto>.Failure("User Already Exist");
             return Ok(responce);
@@ -39,14 +43,21 @@ namespace EasyTime.EndpointApi.Controllers
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(UserDto dto)
         {
-           await userService.ForgotPassword(dto);
-            return Ok();
+           var result = await userService.ForgotPassword(dto);
+            return Ok(result);
         }
 
-        [HttpPost("ChangePassword")]
-        public async Task<IActionResult> ChangePassword(string password,Guid token)
+        [HttpGet("CheckChangePasswordToken/{TokenForChangePassword}")]
+        public async Task<IActionResult> CheckChangePasswordToken(Guid TokenForChangePassword)
         {
-            var result = await userService.ChangePassword(password,token);
+            var result = await userService.CheckResetToken(TokenForChangePassword);
+            return Ok(result);
+        }
+
+        [HttpPost("ChangePassword/{TokenForChangePassword}")]
+        public async Task<IActionResult> ChangePassword(string password,Guid TokenForChangePassword)
+        {
+            var result = await userService.ChangePassword(password, TokenForChangePassword);
             return Ok(result);
         }
     }

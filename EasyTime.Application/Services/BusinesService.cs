@@ -1,4 +1,5 @@
-﻿using EasyTime.Application.Contract.Dtos.BusinesDto;
+﻿using AutoMapper;
+using EasyTime.Application.Contract.Dtos.BusinesDto;
 using EasyTime.Application.Contract.IServices;
 using EasyTime.Model.IRepository;
 using EasyTime.Model.Models;
@@ -6,7 +7,7 @@ using EasyTime.Utilities.Convertor;
 using Microsoft.EntityFrameworkCore;
 namespace EasyTime.Application.Services
 {
-    public class BusinesService(IBaseRepository<long, BusinesCity> cityRepository, IBaseRepository<long, BusinesRegion> regionRepository, IBaseRepository<long, BusinesNeighberhood> neighberhoodRepository, IBaseRepository<long, Business> businessRepository, IBaseRepository<Guid, User> userRepository, IBaseRepository<long, BusinessOwnerDay> businessOwnerDayRepository, IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository, IBaseRepository<Guid, BusinessOwner> businessOwnerRepository, IBaseRepository<long, Reserve> reserveRepository) : IBusinesService
+    public class BusinesService(IBaseRepository<long, BusinesCity> cityRepository, IBaseRepository<long, BusinesRegion> regionRepository, IBaseRepository<long, BusinesNeighberhood> neighberhoodRepository, IBaseRepository<long, Business> businessRepository, IBaseRepository<Guid, User> userRepository, IBaseRepository<long, BusinessOwnerDay> businessOwnerDayRepository, IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository, IBaseRepository<Guid, User> businessOwnerRepository, IBaseRepository<long, Reserve> reserveRepository, IMapper mapper) : IBusinesService
     {
         private readonly IBaseRepository<long, BusinesCity> cityRepository = cityRepository;
         private readonly IBaseRepository<long, BusinesRegion> regionRepository = regionRepository;
@@ -15,123 +16,127 @@ namespace EasyTime.Application.Services
         private readonly IBaseRepository<long, Business> businessRepository = businessRepository;
         private readonly IBaseRepository<long, BusinessOwnerDay> businessOwnerDayRepository = businessOwnerDayRepository;
         private readonly IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository = businessOwnerTimeRepository;
-        private readonly IBaseRepository<Guid, BusinessOwner> businessOwnerRepository = businessOwnerRepository;
-        private readonly BaseService<ReserveDto, long, Reserve> reserveService;
-        private readonly IBaseRepository<long, Reserve> reserveRepository;
+        private readonly IBaseRepository<Guid, User> businessOwnerRepository = businessOwnerRepository;
+        private readonly IBaseRepository<long, Reserve> reserveRepository = reserveRepository;
+        private readonly IMapper mapper = mapper;
 
-        public async Task<IQueryable<BusinessDto>> FilterBusines(long businesCityId)
-        {
-            var result = (from p in await FilterBusinesByPlace(businesCityId)
-                          join b in await businessRepository.GetAllEntities()
-                             on p.CityId equals b.CityId
-                          join u in await userRepository.GetAllEntities()
-                             on b.BusinesOwnerId equals u.Id
-                          where b.CityId == p.CityId && b.RegionId == p.RegionId && b.NeighberhoodId == p.NeighberhoodId
-                          select new BusinessDto()
-                          {
-                              BusinessLogo = b.Logo,
-                              BusinessName = b.Name,
-                              Id = b.Id,
-                              BusinessOwnerName = u.UserName
-                          }
-                         ).Take(4).Skip(1);
-
-            return result;
-        }
-
-        public async Task<IQueryable<BusinessPlaceDto>> FilterBusinesByPlace(long businesCityId)
-        {
-            var result = from c in await cityRepository.GetAllEntities()
-                         join r in await regionRepository.GetAllEntities()
-                            on c.Id equals r.BusinesCityId
-                         join n in await neighberhoodRepository.GetAllEntities()
-                            on r.Id equals n.BusinesRegionId
-                         where c.Id == businesCityId
-                         select new BusinessPlaceDto()
-                         {
-                             CityName = c.Name,
-                             RegionName = r.Name,
-                             NeighberhoodName = n.Name,
-                             CityId = c.Id,
-                             RegionId = n.Id,
-                             NeighberhoodId = n.Id
-                         };
-            return result;
-        }
-
-        public async Task<BusinessDetailDto> GetBusinessDetail(long businessId)
+        public async Task<IQueryable<BusinessDto>> FilterBusines(long neighberhoodId)
         {
             var busineses = await businessRepository.GetAllEntities();
-            var businessOwners = await businessOwnerRepository.GetAllEntities();
-            var cityies = await cityRepository.GetAllEntities();
-            var regions = await regionRepository.GetAllEntities();
-            var neighberhoods = await neighberhoodRepository.GetAllEntities();
-            var businessOwnerDayes = await businessOwnerDayRepository.GetAllEntities();
-            var businessOwnerTimes = await businessOwnerTimeRepository.GetAllEntities();
-            var result = (from b in busineses
-                          join bu in businessOwners
-                            on b.BusinesOwnerId equals bu.Id
-                          join c in cityies
-                            on b.CityId equals c.Id
-                          join r in regions
-                            on b.RegionId equals r.Id
-                          join n in neighberhoods
-                            on b.NeighberhoodId equals n.Id
-
-                          where b.Id == businessId
-                          select new BusinessDetailDto()
-                          {
-                              BusinesOwnerId = b.BusinesOwnerId,
-                              BusinessId = b.Id,
-                              CityId = b.CityId,
-                              CityName = c.Name,
-                              Description = b.Description,
-                              Logo = b.Logo,
-                              NeighberhoodId = b.NeighberhoodId,
-                              Name = b.Name,
-                              NeighberhoodName = n.Name,
-                              RegionId = r.Id,
-                              RegionName = r.Name,
-                              BusinessOwnerDayDtos = (from bd in businessOwnerDayes
-                                                      join bt in businessOwnerTimes
-                                                       on bd.Id equals bt.BusinessOwnerDayId
-                                                      where bt.IsReserved == true && bt.IsReserved == false
-                                                      select new BusinessOwnerDayDto()
-                                                      {
-                                                          DayOfWeek = bd.DayOfWeek,
-                                                          BusinessOwnerTimes = new List<BusinessOwnerTimeDto>()
-                                                            {
-                                                                new BusinessOwnerTimeDto()
-                                                                {
-                                                                    From = bt.From,
-                                                                    To = bt.To,
-                                                                    IsReserved = bt.IsReserved
-                                                                }
-                                                            }
-                                                      }).ToList()
-
-
-                          }
-                          ).FirstOrDefault();
+            var result = busineses
+                .Include(x => x.User)
+                .Where(x => x.NeighberhoodId == neighberhoodId)
+                .Select(x => new BusinessDto()
+                {
+                    BusinessLogo = $"Images/{x.Logo}",
+                    BusinessName = x.Name,
+                    BusinessOwnerName = x.User.UserName,
+                    Id = x.Id
+                });
             return result;
         }
+
+        public async Task<BusinessPlaceDto> FilterBusinesByPlace(long? businesCityId, long? regionId)
+        {
+            var cities = await cityRepository.GetAllEntities();
+            var regions = await regionRepository.GetAllEntities();
+            var neighborhoods = await neighberhoodRepository.GetAllEntities();
+
+            var selectedCity = cities.FirstOrDefault(c => c.Id == businesCityId);
+            if (selectedCity == null)
+                return null; // یا throw exception، بسته به پروژه‌ت
+
+            var selectedRegions = regions.Where(r => r.BusinesCityId == businesCityId).ToList();
+
+            var regionDtos = selectedRegions.Select(region => new RegionDto
+            {
+                RegionId = region.Id,
+                RegionName = region.Name,
+                Neighborhoods = neighborhoods
+                                 .Where(n => n.BusinesRegionId == region.Id)
+                                 .Select(n => new NeighborhoodDto
+                                 {
+                                     NeighborhoodId = n.Id,
+                                     NeighborhoodName = n.Name
+                                 })
+                                 .ToList()
+            }).ToList();
+            var selectedregion = regions.FirstOrDefault(x => x.Id == regionId);
+
+            var selectedNeighberhoods = neighborhoods.Where(x => x.BusinesRegionId == regionId).ToList();
+
+            var neighberhoodsDtos = selectedNeighberhoods.Select(x => new NeighborhoodDto()
+            {
+                NeighborhoodId = x.Id,
+                NeighborhoodName = x.Name
+            }).ToList();
+
+            var result = new BusinessPlaceDto
+            {
+                CityId = selectedCity.Id,
+                CityName = selectedCity.Name,
+                Regions = regionDtos,
+                Neighborhoods = neighberhoodsDtos
+            };
+
+            return result;
+        }
+
+
+        public async Task<BusinessDetailDto?> GetBusinessDetail(long businessId)
+        {
+            var days = await businessOwnerDayRepository.GetAllEntities();
+            var times = await businessOwnerTimeRepository.GetAllEntities();
+            // کوئری ترکیبی با join کامل
+            var result = await (from b in await businessRepository.GetAllEntities()
+                                join c in await cityRepository.GetAllEntities()
+                                    on b.CityId equals c.Id
+                                join r in await regionRepository.GetAllEntities()
+                                    on c.Id equals r.BusinesCityId
+                                join n in await neighberhoodRepository.GetAllEntities()
+                                    on r.Id equals n.BusinesRegionId
+                                join u in await userRepository.GetAllEntities()
+                                    on b.UserId equals u.Id
+                                where b.Id == businessId
+                                select new BusinessDetailDto()
+                                {
+                                    Logo = b.Logo,
+                                    Name = b.Name,
+                                    Description = b.Description,
+                                    CityId = c.Id,
+                                    CityName = c.Name,
+                                    NeighberhoodId = n.Id,
+                                    NeighberhoodName = n.Name,
+                                    RegionId = r.Id,
+                                    RegionName = r.Name,
+                                    UserId = b.UserId,
+                                    BusinessId = b.Id,
+                                    BusinessOwnerDayDtos = days.Select(x => new BusinessOwnerDayDto()
+                                    {
+                                        Id = x.Id,
+                                        DayOfWeek = x.DayOfWeek,
+                                        BusinessOwnerTimes = times.Where(t => t.BusinessOwnerDayId == x.Id).Where(t => t.IsReserved == true || t.IsReserved == false).Select(t => new BusinessOwnerTimeDto()
+                                        {
+                                            From = t.From,
+                                            To = t.To,
+                                            Id = t.Id,
+                                            IsReserved = t.IsReserved
+                                        }).ToList()
+                                    }).ToList()
+                                    }).FirstOrDefaultAsync();
+            return result;
+        }
+
+
 
         public async Task<Result<ReserveDto>> Reserve(ReserveDto dto)
         {
             var validateReserve = await ValidateReserve(dto);
             if (validateReserve.IsSuccess)
             {
-                var reserve = new ReserveDto()
-                {
-                    BusinessOwnerDayId = dto.BusinessOwnerDayId,
-                    BusinessOwnerTimeId = dto.BusinessOwnerTimeId,
-                    CreateObjectDate = DateTime.Now,
-                    Id = dto.Id,
-                    IsDelete = dto.IsDelete,
-                    UserId = dto.UserId
-                };
-                await reserveService.Create(reserve);
-                return Result<ReserveDto>.Success(reserve, "رزرو شما با موفقیت انجام شد");
+                var resreve = mapper.Map<Reserve>(dto);
+                await reserveRepository.Add(resreve);
+                return Result<ReserveDto>.Success( "رزرو شما با موفقیت انجام شد");
             }
             else
                 return Result<ReserveDto>.Failure("زمان انتخاب‌شده قبلاً رزرو شده است.");
@@ -152,6 +157,16 @@ namespace EasyTime.Application.Services
                 return Result<bool>.Failure("زمان انتخاب‌شده قبلاً رزرو شده است.");
 
             return Result<bool>.Success(true);
+        }
+        public async Task<List<CityDto>> GetAllCitiesAsync()
+        {
+            var cities = await cityRepository.GetAllEntities();
+
+            return cities.Select(c => new CityDto
+            {
+                Id = c.Id,
+                Name = c.Name
+            }).ToList();
         }
     }
 }

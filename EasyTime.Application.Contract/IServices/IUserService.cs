@@ -9,5 +9,6 @@ namespace EasyTime.Application.Contract.IServices
         Task<Result<string>> Login(UserLoginDto dto);
         Task<Result<bool>> ForgotPassword(UserDto dto);
         Task<Result<string>> ChangePassword(string newPassword, Guid expireToken);
+        Task<Result<string>> CheckResetToken(Guid TokenForChangePassword);
     }
 }

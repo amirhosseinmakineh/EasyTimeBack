@@ -10,7 +10,6 @@ namespace EasyTime.InfraStracure.Context
 
         }
         public DbSet<User> Users { get; set; }
-        public DbSet<BusinessOwner> BusinesOwners { get; set; }
         public DbSet<BusinesCity> BusinesCityes { get; set; }
         public DbSet<BusinesNeighberhood> BusinesNeighberhoodes { get; set; }
         public DbSet<BusinessOwnerDay> BusinesOwnerDays { get; set; }

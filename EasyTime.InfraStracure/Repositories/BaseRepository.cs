@@ -27,7 +27,7 @@ namespace EasyTime.InfraStracure.Repositories
 
         public async Task<IQueryable<Tentity>> GetAllEntities()
         {
-            return context.Set<Tentity>();
+            return context.Set<Tentity>().AsNoTracking();
         }
 
         public async Task<Tentity> GetById(Tkey id)
