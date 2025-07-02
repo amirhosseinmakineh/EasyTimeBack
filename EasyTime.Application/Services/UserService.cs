@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EasyTime.Application.Contract.Dtos;
+using EasyTime.Application.Contract.Dtos.BusinessOwnerDtos;
 using EasyTime.Application.Contract.IServices;
 using EasyTime.Model.IRepository;
 using EasyTime.Model.Models;
@@ -12,10 +13,12 @@ namespace EasyTime.Application.Services
         private readonly EmailService emailService = new EmailService();
         private readonly IBaseRepository<Guid, User> repository;
         private readonly ITokenGenerator tokenGenerator;
+        private readonly IMapper mapper;
         public UserService(IMapper mapper, IBaseRepository<Guid, User> repository, ITokenGenerator tokenGenerator)
         {
             this.repository = repository;
             this.tokenGenerator = tokenGenerator;
+            this.mapper = mapper;
         }
 
         public async Task<Result<string>> ChangePassword(string newPassword, Guid expireToken)
@@ -94,6 +97,8 @@ namespace EasyTime.Application.Services
 
         public async Task<bool> Register(UserDto dto)
         {
+            bool result = false;
+
             var users = await repository.GetAllEntities();
             var user = new User()
             {
@@ -103,16 +108,40 @@ namespace EasyTime.Application.Services
                 IsDelete = dto.IsDelete = false,
                 CreateObjectDate = dto.CreateObjectDate = DateTime.Now,
                 UpdateEntityDate = dto.UpdateObjectDate = DateTime.Now,
-                Password = PasswordHassher.HashPassword(dto.Password)
+                Password = PasswordHassher.HashPassword(dto.Password),
+                Email = dto.Email,
+                RoleId = 3
             };
-            bool result = false;
+            if(user.IsBusinesOwner == true)
+            {
+                user.RoleId = 2;
+            }
+
             var checkUser = users.Any(x => x.UserName == dto.UserName && x.Email == dto.Email);
+
             if (checkUser is false)
             {
                 await repository.Add(user);
+                await repository.SaveChanges();
                 result = true;
             }
             return result;
+        }
+
+        public async Task<Result<object>> UpdateBusinessOwnerInfo(UpdateBusinessOwnerInfoDto dto)
+        {
+            var user = await repository.GetById(dto.Id);
+
+            if (user != null)
+            {
+                user.Age = dto.Age;
+                user.Family = dto.Family;
+                user.ImageName = dto.ImageName;
+                await repository.Update(user);
+
+                return Result<object>.Success(user,"Update SuccessFully");
+            }
+            return Result<object>.Failure("Update Faile ");
         }
     }
 

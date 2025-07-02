@@ -1,4 +1,6 @@
-﻿using EasyTime.Application.Contract.Dtos;
+﻿using EasyTime.Application.Attributes;
+using EasyTime.Application.Contract.Dtos;
+using EasyTime.Application.Contract.Dtos.BusinessOwnerDtos;
 using EasyTime.Application.Contract.IServices;
 using EasyTime.Utilities.Convertor;
 using Microsoft.AspNetCore.Cors;
@@ -60,5 +62,13 @@ namespace EasyTime.EndpointApi.Controllers
             var result = await userService.ChangePassword(password, TokenForChangePassword);
             return Ok(result);
         }
+
+        [HttpPost("DashBoard")]
+        [Rolemanager("BusinessOwner")]
+        public IActionResult CompleteBusinessOwnerInfo(UpdateBusinessOwnerInfoDto dto)
+        {
+            var resutl = userService.UpdateBusinessOwnerInfo(dto);
+            return Ok(resutl);
+        } 
     }
 }

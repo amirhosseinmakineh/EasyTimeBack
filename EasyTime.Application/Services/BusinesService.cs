@@ -44,7 +44,7 @@ namespace EasyTime.Application.Services
 
             var selectedCity = cities.FirstOrDefault(c => c.Id == businesCityId);
             if (selectedCity == null)
-                return null; // یا throw exception، بسته به پروژه‌ت
+                return null;
 
             var selectedRegions = regions.Where(r => r.BusinesCityId == businesCityId).ToList();
 

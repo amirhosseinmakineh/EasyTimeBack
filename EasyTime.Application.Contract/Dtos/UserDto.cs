@@ -8,6 +8,7 @@
         public Guid? TokenForChangePassword { get; set; }
         public DateTime? ExpireChangePasswordToken { get; set; }
         public bool? IsBusinessOwner { get; set; }
+
     }
     public class ForgotPasswordDto:BaseDto<Guid>
     {

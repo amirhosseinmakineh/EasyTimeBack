@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTime.InfraStracure.Migrations
 {
     [DbContext(typeof(EasyTimeContext))]
-    [Migration("20250428193810_UpdateBusinessPlaces")]
-    partial class UpdateBusinessPlaces
+    [Migration("20250701171459_CreateDatabase")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -228,6 +228,9 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<DateTime>("UpdateEntityDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BusinesOwnerId");
@@ -239,42 +242,6 @@ namespace EasyTime.InfraStracure.Migrations
                     b.HasIndex("RegionId");
 
                     b.ToTable("Businesses");
-                });
-
-            modelBuilder.Entity("EasyTime.Model.Models.BusinessOwner", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreateObjectDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Family")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("UpdateEntityDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BusinesOwners");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.Reserve", b =>
@@ -312,11 +279,40 @@ namespace EasyTime.InfraStracure.Migrations
                     b.ToTable("Reserves");
                 });
 
+            modelBuilder.Entity("EasyTime.Model.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateObjectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdateEntityDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("EasyTime.Model.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("Age")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreateObjectDate")
                         .HasColumnType("datetime2");
@@ -328,6 +324,12 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<DateTime?>("ExpireChangePasswordToken")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Family")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsBusinesOwner")
                         .HasColumnType("bit");
 
@@ -337,6 +339,9 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("TokenForChangePassword")
                         .HasColumnType("uniqueidentifier");
@@ -349,6 +354,8 @@ namespace EasyTime.InfraStracure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -407,8 +414,8 @@ namespace EasyTime.InfraStracure.Migrations
 
             modelBuilder.Entity("EasyTime.Model.Models.Business", b =>
                 {
-                    b.HasOne("EasyTime.Model.Models.BusinessOwner", "BusinessOwner")
-                        .WithMany("Busines")
+                    b.HasOne("EasyTime.Model.Models.User", "User")
+                        .WithMany()
                         .HasForeignKey("BusinesOwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -437,17 +444,6 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.Navigation("BusinesRegion");
 
-                    b.Navigation("BusinessOwner");
-                });
-
-            modelBuilder.Entity("EasyTime.Model.Models.BusinessOwner", b =>
-                {
-                    b.HasOne("EasyTime.Model.Models.User", "User")
-                        .WithMany("BusinesOwners")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("User");
                 });
 
@@ -468,6 +464,17 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Navigation("BusinessOwnerDay");
 
                     b.Navigation("BusinessOwnerTime");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.User", b =>
+                {
+                    b.HasOne("EasyTime.Model.Models.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("BusinessOwnerDay", b =>
@@ -506,14 +513,9 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Navigation("BusinessOwnerTimes");
                 });
 
-            modelBuilder.Entity("EasyTime.Model.Models.BusinessOwner", b =>
+            modelBuilder.Entity("EasyTime.Model.Models.Role", b =>
                 {
-                    b.Navigation("Busines");
-                });
-
-            modelBuilder.Entity("EasyTime.Model.Models.User", b =>
-                {
-                    b.Navigation("BusinesOwners");
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

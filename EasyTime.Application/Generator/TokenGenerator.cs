@@ -30,11 +30,11 @@ namespace EasyTime.Application.Generator
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var result = tokenHandler.WriteToken(token);
-           await ValidateToken(result);
+            ValidateToken(result);
             return result;
         }
 
-        public async Task<ClaimsPrincipal> ValidateToken(string token)
+        public  ClaimsPrincipal ValidateToken(string token)
         {
             var parameters = new TokenValidationParameters()
             {
