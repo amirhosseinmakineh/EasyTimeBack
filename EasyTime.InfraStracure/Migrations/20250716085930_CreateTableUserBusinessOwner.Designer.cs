@@ -4,6 +4,7 @@ using EasyTime.InfraStracure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTime.InfraStracure.Migrations
 {
     [DbContext(typeof(EasyTimeContext))]
-    partial class EasyTimeContextModelSnapshot : ModelSnapshot
+    [Migration("20250716085930_CreateTableUserBusinessOwner")]
+    partial class CreateTableUserBusinessOwner
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

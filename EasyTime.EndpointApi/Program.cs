@@ -1,10 +1,14 @@
-﻿using EasyTime.Application.Contract.IServices;
+﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Autofac.Extras.DynamicProxy;
+using EasyTime.Application.Contract.IServices;
 using EasyTime.Application.Contract.Mapper;
 using EasyTime.Application.Generator;
 using EasyTime.Application.Services;
 using EasyTime.Application.Validator;
 using EasyTime.InfraStracure.Context;
 using EasyTime.InfraStracure.Repositories;
+using EasyTime.InfraStracure.UnitOfWork;
 using EasyTime.Model.IRepository;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -65,7 +69,15 @@ builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>)
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBusinesService, BusinesService>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
-
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddSingleton<UnitOfWorkAttributeManager>();
+#region RegisterAutofact
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory(x =>
+{
+    x.RegisterType<UnitOfWorkInterCeptor>();
+    x.RegisterType<BusinesService>().As<IBusinesService>().EnableInterfaceInterceptors().InterceptedBy(typeof(UnitOfWorkInterCeptor));
+}));
+#endregion
 builder.Services.AddDbContext<EasyTimeContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("EasyTime"));

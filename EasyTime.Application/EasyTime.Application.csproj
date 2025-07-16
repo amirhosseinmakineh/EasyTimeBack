@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EasyTime.Application.Contract\EasyTime.Application.Contract.csproj" />
+    <ProjectReference Include="..\EasyTime.InfraStracure\EasyTime.InfraStracure.csproj" />
     <ProjectReference Include="..\EasyTime.Model\EasyTime.Model.csproj" />
     <ProjectReference Include="..\EasyTime.Utilities\EasyTime.Utilities.csproj" />
   </ItemGroup>

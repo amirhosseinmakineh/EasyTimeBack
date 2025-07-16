@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using EasyTime.Application.Contract.Dtos.BusinesDto;
 using EasyTime.Application.Contract.IServices;
+using EasyTime.InfraStracure.UnitOfWork;
 using EasyTime.Model.IRepository;
 using EasyTime.Model.Models;
 using EasyTime.Utilities.Convertor;
 using Microsoft.EntityFrameworkCore;
 namespace EasyTime.Application.Services
 {
-    public class BusinesService(IBaseRepository<long, BusinesCity> cityRepository, IBaseRepository<long, BusinesRegion> regionRepository, IBaseRepository<long, BusinesNeighberhood> neighberhoodRepository, IBaseRepository<long, Business> businessRepository, IBaseRepository<Guid, User> userRepository, IBaseRepository<long, BusinessOwnerDay> businessOwnerDayRepository, IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository, IBaseRepository<Guid, User> businessOwnerRepository, IBaseRepository<long, Reserve> reserveRepository, IMapper mapper) : IBusinesService
+    public class BusinesService(IBaseRepository<long, BusinesCity> cityRepository,IBaseRepository<long,UserBusinessOwner> userBusinessOwnerRepository, IBaseRepository<long, BusinesRegion> regionRepository, IBaseRepository<long, BusinesNeighberhood> neighberhoodRepository, IBaseRepository<long, Business> businessRepository, IBaseRepository<Guid, User> userRepository, IBaseRepository<long, BusinessOwnerDay> businessOwnerDayRepository, IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository, IBaseRepository<Guid, User> businessOwnerRepository, IBaseRepository<long, Reserve> reserveRepository, IMapper mapper) : IBusinesService,IService
     {
         private readonly IBaseRepository<long, BusinesCity> cityRepository = cityRepository;
         private readonly IBaseRepository<long, BusinesRegion> regionRepository = regionRepository;
@@ -15,6 +16,7 @@ namespace EasyTime.Application.Services
         private readonly IBaseRepository<Guid, User> userRepository = userRepository;
         private readonly IBaseRepository<long, Business> businessRepository = businessRepository;
         private readonly IBaseRepository<long, BusinessOwnerDay> businessOwnerDayRepository = businessOwnerDayRepository;
+        private readonly IBaseRepository<long,UserBusinessOwner> userBusinessOwnerRepository = userBusinessOwnerRepository;
         private readonly IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository = businessOwnerTimeRepository;
         private readonly IBaseRepository<Guid, User> businessOwnerRepository = businessOwnerRepository;
         private readonly IBaseRepository<long, Reserve> reserveRepository = reserveRepository;
@@ -128,14 +130,33 @@ namespace EasyTime.Application.Services
         }
 
 
-
+        [UnitOfWork]
         public async Task<Result<ReserveDto>> Reserve(ReserveDto dto)
         {
             var validateReserve = await ValidateReserve(dto);
             if (validateReserve.IsSuccess)
             {
                 var resreve = mapper.Map<Reserve>(dto);
-                await reserveRepository.Add(resreve);
+                var userEntities = await userRepository.GetAllEntities();
+                var user = await userEntities.Where(x => x.IsBusinesOwner == false && x.RoleId == 3 && x.Id == dto.UserId).FirstOrDefaultAsync();
+                var businessOwner = await userEntities.Where(x => x.IsBusinesOwner == true && x.Id == dto.BusinessOwnerId).FirstOrDefaultAsync();
+
+                var reserve = new Reserve()
+                {
+                    BusinessOwnerDayId = dto.BusinessOwnerDayId,
+                    BusinessOwnerTimeId = dto.BusinessOwnerTimeId,
+                    UserId = dto.UserId,
+                    IsDelete = false,
+                    UpdateEntityDate = DateTime.UtcNow
+                };
+                await reserveRepository.Add(reserve);
+                var userBisinessOwner = new UserBusinessOwner()
+                {
+                    UserId = user.Id,
+                    BusinessOnwerId = businessOwner.Id
+                };
+                await userBusinessOwnerRepository.Add(userBisinessOwner);
+                await reserveRepository.SaveChanges();
                 return Result<ReserveDto>.Success( "رزرو شما با موفقیت انجام شد");
             }
             else
@@ -155,7 +176,6 @@ namespace EasyTime.Application.Services
 
             if (hasConflict)
                 return Result<bool>.Failure("زمان انتخاب‌شده قبلاً رزرو شده است.");
-
             return Result<bool>.Success(true);
         }
         public async Task<List<CityDto>> GetAllCitiesAsync()

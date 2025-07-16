@@ -11,6 +11,9 @@ namespace EasyTime.Application.Contract.IServices
         Task<Result<ReserveDto>> Reserve(ReserveDto dto);
         Task<Result<bool>> ValidateReserve(ReserveDto dto);
         Task<List<CityDto>> GetAllCitiesAsync();
+    }
+    public interface IService
+    {
 
     }
 }
