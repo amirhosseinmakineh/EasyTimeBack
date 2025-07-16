@@ -18,6 +18,6 @@ namespace EasyTime.InfraStracure.Context
         public DbSet<Business> Businesses { get; set; }
         public DbSet<Reserve> Reserves { get; set; }
         public DbSet<Role> Roles { get; set; }
-
+        public DbSet<UserBusinessOwner> UserBusinessOwners { get; set; }
     }
 }

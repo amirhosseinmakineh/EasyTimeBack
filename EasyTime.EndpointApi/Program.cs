@@ -71,6 +71,7 @@ builder.Services.AddScoped<IBusinesService, BusinesService>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<UnitOfWorkAttributeManager>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 #region RegisterAutofact
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory(x =>
 {
