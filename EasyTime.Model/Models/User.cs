@@ -11,5 +11,10 @@
         public string? ImageName { get; set; }
         public Guid? TokenForChangePassword { get; set; }
         public DateTime? ExpireChangePasswordToken { get; set; }
+
+        #region Relations
+        public Role Role { get; set; }
+        public ICollection<UserBusinessOwner> UserBusinessOwner { get; set; }
+        #endregion
     }
 }
