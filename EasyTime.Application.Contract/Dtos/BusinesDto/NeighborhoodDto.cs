@@ -2,7 +2,7 @@
 {
     public class NeighborhoodDto
     {
-        public long NeighborhoodId { get; set; }
+        public long Id { get; set; }
         public string NeighborhoodName { get; set; }
     }
 }

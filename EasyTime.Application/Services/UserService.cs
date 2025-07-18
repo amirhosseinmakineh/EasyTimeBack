@@ -2,23 +2,32 @@
 using EasyTime.Application.Contract.Dtos;
 using EasyTime.Application.Contract.Dtos.BusinessOwnerDtos;
 using EasyTime.Application.Contract.IServices;
+using EasyTime.InfraStracure.UnitOfWork;
 using EasyTime.Model.IRepository;
 using EasyTime.Model.Models;
 using EasyTime.Utilities.Convertor;
 
 namespace EasyTime.Application.Services
 {
-    public class UserService : IUserService
+    public class UserService : IUserService , IService
     {
         private readonly EmailService emailService = new EmailService();
         private readonly IBaseRepository<Guid, User> repository;
         private readonly ITokenGenerator tokenGenerator;
+        private readonly IBaseRepository<long, Business> businessRepository;
+        private readonly IBaseRepository<long, BusinessDay> businessDayRepository;
+        private readonly IBaseRepository<long, BusinessTime> businessTimeRepository;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
-        public UserService(IMapper mapper, IBaseRepository<Guid, User> repository, ITokenGenerator tokenGenerator)
+        public UserService(IMapper mapper, IBaseRepository<Guid, User> repository, ITokenGenerator tokenGenerator, IBaseRepository<long, Business> businessRepository, IBaseRepository<long, BusinessDay> businessDayRepository, IBaseRepository<long, BusinessTime> businessTimeRepository, IUnitOfWork unitOfWork)
         {
             this.repository = repository;
             this.tokenGenerator = tokenGenerator;
             this.mapper = mapper;
+            this.businessRepository = businessRepository;
+            this.businessDayRepository = businessDayRepository;
+            this.businessTimeRepository = businessTimeRepository;
+            this.unitOfWork = unitOfWork;
         }
 
         public async Task<Result<string>> ChangePassword(string newPassword, Guid expireToken)
@@ -127,22 +136,68 @@ namespace EasyTime.Application.Services
             }
             return result;
         }
-
         public async Task<Result<object>> UpdateBusinessOwnerInfo(UpdateBusinessOwnerInfoDto dto)
         {
-            var user = await repository.GetById(dto.Id);
+            await unitOfWork.Begin();
 
-            if (user != null)
+            try
             {
+                var user = await repository.GetById(dto.Id);
+                if (user == null)
+                    return Result<object>.Failure("User not found");
+
                 user.Age = dto.Age;
                 user.Family = dto.Family;
                 user.ImageName = dto.ImageName;
                 await repository.Update(user);
 
-                return Result<object>.Success(user,"Update SuccessFully");
+                var business = new Business
+                {
+                    CityId = dto.City.Id,
+                    RegionId = dto.Region.Id,
+                    NeighberhoodId = dto.Neighborhood.Id,
+                    Name = dto.Business.BusinessName,
+                    CreateObjectDate = DateTime.UtcNow,
+                    Description = dto.Business.Description,
+                    IsDelete = false,
+                    Logo = dto.Business.BusinessLogo,
+                    BusinessOwnerId = user.Id,
+
+                };
+                await businessRepository.Add(business);
+                await businessRepository.SaveChanges();
+
+                var businessDays = dto.DayIdes
+                    .Select(dayId => new BusinessDay
+                    {
+                        BusinessId = business.Id,
+                        DayId = dayId,
+                        CreateObjectDate = DateTime.UtcNow
+                    }).ToList();
+
+                await businessDayRepository.AddRange(businessDays);
+                await businessDayRepository.SaveChanges();
+
+                var businessTimes = businessDays
+                    .SelectMany(d => dto.TimeIdes.Select(timeId => new BusinessTime
+                    {
+                        BusinessDayId = d.Id,
+                        TimeId = timeId
+                    })).ToList();
+
+                await businessTimeRepository.AddRange(businessTimes);
+                await businessTimeRepository.SaveChanges();
+
+                await unitOfWork.Commit();
+                return Result<object>.Success(user, "Update Successfully");
             }
-            return Result<object>.Failure("Update Faile ");
+            catch (Exception ex)
+            {
+                await unitOfWork.RoleBack();
+                return Result<object>.Failure("Update Failed: " + ex.Message);
+            }
         }
+
     }
 
 }

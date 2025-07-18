@@ -65,7 +65,7 @@ namespace EasyTime.EndpointApi.Controllers
 
         [HttpPost("DashBoard")]
         [Rolemanager("BusinessOwner")]
-        public IActionResult CompleteBusinessOwnerInfo(UpdateBusinessOwnerInfoDto dto)
+        public IActionResult CreateBusiness(UpdateBusinessOwnerInfoDto dto)
         {
             var resutl = userService.UpdateBusinessOwnerInfo(dto);
             return Ok(resutl);

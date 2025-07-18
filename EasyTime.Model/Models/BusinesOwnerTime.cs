@@ -10,4 +10,5 @@ public class BusinessOwnerTime : BaseEntity<long>
     public BusinessOwnerDay BusinessOwnerDay { get; set; }
     public Business Business { get; set; }
     public ICollection<Reserve> Reserves { get; set; }
+    public ICollection<BusinessTime> BusinessTimes { get; set; }
 }

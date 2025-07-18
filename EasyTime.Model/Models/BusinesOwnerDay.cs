@@ -8,4 +8,5 @@ public class BusinessOwnerDay : BaseEntity<long>
     public Business Business { get; set; }
     public ICollection<BusinessOwnerTime> BusinessOwnerTimes { get; set; }
     public ICollection<Reserve> Reserves { get; set; }
+    public ICollection<BusinessDay> BusinessDays { get; set; }
 }

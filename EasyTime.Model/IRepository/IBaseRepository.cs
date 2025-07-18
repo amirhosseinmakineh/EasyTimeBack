@@ -1,11 +1,8 @@
 ﻿using EasyTime.Model.Models;
-using static System.Collections.Specialized.BitVector32;
-using System.Numerics;
-using System;
 
 namespace EasyTime.Model.IRepository
 {
-   public interface IBaseRepository<Tkey,Tentity> where Tentity : BaseEntity<Tkey> where Tkey : struct
+    public interface IBaseRepository<Tkey, Tentity> where Tentity : BaseEntity<Tkey> where Tkey : struct
     {
         Task Add(Tentity tentity);
         Task Update(Tentity tentity);
@@ -13,6 +10,7 @@ namespace EasyTime.Model.IRepository
         Task<Tentity> GetById(Tkey id);
         Task<IQueryable<Tentity>> GetAllEntities();
         Task SaveChanges();
+        Task AddRange(IEnumerable<Tentity> tentities);
 
     }
 }

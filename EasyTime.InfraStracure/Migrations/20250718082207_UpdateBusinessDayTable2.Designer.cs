@@ -4,6 +4,7 @@ using EasyTime.InfraStracure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTime.InfraStracure.Migrations
 {
     [DbContext(typeof(EasyTimeContext))]
-    partial class EasyTimeContextModelSnapshot : ModelSnapshot
+    [Migration("20250718082207_UpdateBusinessDayTable2")]
+    partial class UpdateBusinessDayTable2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -281,6 +284,9 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<long>("BusinessDayId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("BusinessOwnerTimeId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime>("CreateObjectDate")
                         .HasColumnType("datetime2");
 
@@ -297,7 +303,7 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.HasIndex("BusinessDayId");
 
-                    b.HasIndex("TimeId");
+                    b.HasIndex("BusinessOwnerTimeId");
 
                     b.ToTable("BusinessTimes");
                 });
@@ -564,7 +570,7 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.HasOne("BusinessOwnerTime", "BusinessOwnerTime")
                         .WithMany("BusinessTimes")
-                        .HasForeignKey("TimeId")
+                        .HasForeignKey("BusinessOwnerTimeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

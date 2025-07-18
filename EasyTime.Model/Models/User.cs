@@ -15,6 +15,7 @@
 
         #region Relations
         public Role Role { get; set; }
+        public ICollection<Business> Businesses { get; set; }
         #endregion
     }
 }

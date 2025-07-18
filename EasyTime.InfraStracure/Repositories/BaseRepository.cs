@@ -44,5 +44,10 @@ namespace EasyTime.InfraStracure.Repositories
         {
             context.SaveChanges();
         }
+
+        public async Task AddRange(IEnumerable<Tentity> tentities)
+        {
+             context.Set<Tentity>().AddRange(tentities);
+        }
     }
 }

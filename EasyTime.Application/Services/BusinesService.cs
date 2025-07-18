@@ -8,7 +8,7 @@ using EasyTime.Utilities.Convertor;
 using Microsoft.EntityFrameworkCore;
 namespace EasyTime.Application.Services
 {
-    public class BusinesService(IBaseRepository<long, BusinesCity> cityRepository,IBaseRepository<long,UserBusinessOwner> userBusinessOwnerRepository, IBaseRepository<long, BusinesRegion> regionRepository, IBaseRepository<long, BusinesNeighberhood> neighberhoodRepository, IBaseRepository<long, Business> businessRepository, IBaseRepository<Guid, User> userRepository, IBaseRepository<long, BusinessOwnerDay> businessOwnerDayRepository, IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository, IBaseRepository<Guid, User> businessOwnerRepository, IBaseRepository<long, Reserve> reserveRepository, IMapper mapper) : IBusinesService,IService
+    public class BusinesService(IBaseRepository<long, BusinesCity> cityRepository, IBaseRepository<long, UserBusinessOwner> userBusinessOwnerRepository, IBaseRepository<long, BusinesRegion> regionRepository, IBaseRepository<long, BusinesNeighberhood> neighberhoodRepository, IBaseRepository<long, Business> businessRepository, IBaseRepository<Guid, User> userRepository, IBaseRepository<long, BusinessOwnerDay> businessOwnerDayRepository, IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository, IBaseRepository<Guid, User> businessOwnerRepository, IBaseRepository<long, Reserve> reserveRepository, IMapper mapper) : IBusinesService, IService
     {
         private readonly IBaseRepository<long, BusinesCity> cityRepository = cityRepository;
         private readonly IBaseRepository<long, BusinesRegion> regionRepository = regionRepository;
@@ -16,7 +16,7 @@ namespace EasyTime.Application.Services
         private readonly IBaseRepository<Guid, User> userRepository = userRepository;
         private readonly IBaseRepository<long, Business> businessRepository = businessRepository;
         private readonly IBaseRepository<long, BusinessOwnerDay> businessOwnerDayRepository = businessOwnerDayRepository;
-        private readonly IBaseRepository<long,UserBusinessOwner> userBusinessOwnerRepository = userBusinessOwnerRepository;
+        private readonly IBaseRepository<long, UserBusinessOwner> userBusinessOwnerRepository = userBusinessOwnerRepository;
         private readonly IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository = businessOwnerTimeRepository;
         private readonly IBaseRepository<Guid, User> businessOwnerRepository = businessOwnerRepository;
         private readonly IBaseRepository<long, Reserve> reserveRepository = reserveRepository;
@@ -52,13 +52,13 @@ namespace EasyTime.Application.Services
 
             var regionDtos = selectedRegions.Select(region => new RegionDto
             {
-                RegionId = region.Id,
+                Id = region.Id,
                 RegionName = region.Name,
                 Neighborhoods = neighborhoods
                                  .Where(n => n.BusinesRegionId == region.Id)
                                  .Select(n => new NeighborhoodDto
                                  {
-                                     NeighborhoodId = n.Id,
+                                     Id = n.Id,
                                      NeighborhoodName = n.Name
                                  })
                                  .ToList()
@@ -69,7 +69,7 @@ namespace EasyTime.Application.Services
 
             var neighberhoodsDtos = selectedNeighberhoods.Select(x => new NeighborhoodDto()
             {
-                NeighborhoodId = x.Id,
+                Id = x.Id,
                 NeighborhoodName = x.Name
             }).ToList();
 
@@ -98,7 +98,7 @@ namespace EasyTime.Application.Services
                                 join n in await neighberhoodRepository.GetAllEntities()
                                     on r.Id equals n.BusinesRegionId
                                 join u in await userRepository.GetAllEntities()
-                                    on b.UserId equals u.Id
+                                    on b.BusinessOwnerId equals u.Id
                                 where b.Id == businessId
                                 select new BusinessDetailDto()
                                 {
@@ -111,7 +111,7 @@ namespace EasyTime.Application.Services
                                     NeighberhoodName = n.Name,
                                     RegionId = r.Id,
                                     RegionName = r.Name,
-                                    UserId = b.UserId,
+                                    UserId = b.BusinessOwnerId,
                                     BusinessId = b.Id,
                                     BusinessOwnerDayDtos = days.Select(x => new BusinessOwnerDayDto()
                                     {
@@ -125,7 +125,7 @@ namespace EasyTime.Application.Services
                                             IsReserved = t.IsReserved
                                         }).ToList()
                                     }).ToList()
-                                    }).FirstOrDefaultAsync();
+                                }).FirstOrDefaultAsync();
             return result;
         }
 
@@ -157,7 +157,7 @@ namespace EasyTime.Application.Services
                 };
                 await userBusinessOwnerRepository.Add(userBisinessOwner);
                 await reserveRepository.SaveChanges();
-                return Result<ReserveDto>.Success( "رزرو شما با موفقیت انجام شد");
+                return Result<ReserveDto>.Success("رزرو شما با موفقیت انجام شد");
             }
             else
                 return Result<ReserveDto>.Failure("زمان انتخاب‌شده قبلاً رزرو شده است.");

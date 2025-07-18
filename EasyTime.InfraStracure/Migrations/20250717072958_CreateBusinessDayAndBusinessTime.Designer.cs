@@ -4,6 +4,7 @@ using EasyTime.InfraStracure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTime.InfraStracure.Migrations
 {
     [DbContext(typeof(EasyTimeContext))]
-    partial class EasyTimeContextModelSnapshot : ModelSnapshot
+    [Migration("20250717072958_CreateBusinessDayAndBusinessTime")]
+    partial class CreateBusinessDayAndBusinessTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -192,7 +195,7 @@ namespace EasyTime.InfraStracure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid>("BusinessOwnerId")
+                    b.Property<Guid>("BusinesOwnerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<long>("CityId")
@@ -225,9 +228,12 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<DateTime>("UpdateEntityDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("BusinessOwnerId");
+                    b.HasIndex("BusinesOwnerId");
 
                     b.HasIndex("CityId");
 
@@ -249,6 +255,9 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<long>("BusinessId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("BusinessOwnerDayId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime>("CreateObjectDate")
                         .HasColumnType("datetime2");
 
@@ -265,7 +274,7 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.HasIndex("DayId");
+                    b.HasIndex("BusinessOwnerDayId");
 
                     b.ToTable("BusinessDays");
                 });
@@ -279,6 +288,9 @@ namespace EasyTime.InfraStracure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("BusinessDayId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("BusinessOwnerTimeId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreateObjectDate")
@@ -297,7 +309,7 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.HasIndex("BusinessDayId");
 
-                    b.HasIndex("TimeId");
+                    b.HasIndex("BusinessOwnerTimeId");
 
                     b.ToTable("BusinessTimes");
                 });
@@ -503,8 +515,8 @@ namespace EasyTime.InfraStracure.Migrations
             modelBuilder.Entity("EasyTime.Model.Models.Business", b =>
                 {
                     b.HasOne("EasyTime.Model.Models.User", "User")
-                        .WithMany("Businesses")
-                        .HasForeignKey("BusinessOwnerId")
+                        .WithMany()
+                        .HasForeignKey("BusinesOwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -545,7 +557,7 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.HasOne("BusinessOwnerDay", "BusinessOwnerDay")
                         .WithMany("BusinessDays")
-                        .HasForeignKey("DayId")
+                        .HasForeignKey("BusinessOwnerDayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -564,7 +576,7 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.HasOne("BusinessOwnerTime", "BusinessOwnerTime")
                         .WithMany("BusinessTimes")
-                        .HasForeignKey("TimeId")
+                        .HasForeignKey("BusinessOwnerTimeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -664,11 +676,6 @@ namespace EasyTime.InfraStracure.Migrations
             modelBuilder.Entity("EasyTime.Model.Models.Role", b =>
                 {
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("EasyTime.Model.Models.User", b =>
-                {
-                    b.Navigation("Businesses");
                 });
 #pragma warning restore 612, 618
         }

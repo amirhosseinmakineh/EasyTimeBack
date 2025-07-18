@@ -2,8 +2,14 @@
 {
     public class RegionDto
     {
-        public long RegionId { get; set; }
+        public long Id { get; set; }
         public string RegionName { get; set; }
         public List<NeighborhoodDto> Neighborhoods { get; set; }
+    }
+
+    public class RegionDtoDashBoard
+    {
+        public long Id { get; set; }
+        public string RegionName { get; set; }
     }
 }

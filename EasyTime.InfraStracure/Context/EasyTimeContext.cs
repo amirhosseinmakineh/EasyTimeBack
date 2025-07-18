@@ -1,5 +1,6 @@
 ﻿using EasyTime.Model.Models;
 using Microsoft.EntityFrameworkCore;
+using BusinessDay = EasyTime.Model.Models.BusinessDay;
 
 namespace EasyTime.InfraStracure.Context
 {
@@ -19,5 +20,7 @@ namespace EasyTime.InfraStracure.Context
         public DbSet<Reserve> Reserves { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserBusinessOwner> UserBusinessOwners { get; set; }
+        public DbSet<BusinessDay> BusinessDays { get; set; }
+        public DbSet<BusinessTime> BusinessTimes { get; set; }
     }
 }
