@@ -6,12 +6,12 @@ using EasyTime.Application.Contract.Mapper;
 using EasyTime.Application.Generator;
 using EasyTime.Application.Services;
 using EasyTime.Application.Validator;
+using EasyTime.InfraStracure.BackgroundServices;
 using EasyTime.InfraStracure.Context;
 using EasyTime.InfraStracure.Repositories;
 using EasyTime.InfraStracure.UnitOfWork;
 using EasyTime.Model.IRepository;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -19,7 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(c =>
     c.AddPolicy("CorsPolicy", builder =>
-        builder.WithOrigins("http://localhost:3000") 
+        builder.WithOrigins("http://localhost:3000")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials()
@@ -72,6 +72,7 @@ builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<UnitOfWorkAttributeManager>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddHostedService<CustomerSmsHostedService>();
 #region RegisterAutofact
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory(x =>
 {

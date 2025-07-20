@@ -3,6 +3,7 @@ using EasyTime.Application.Contract.Enums;
 using EasyTime.Application.Contract.IServices;
 using EasyTime.Model.IRepository;
 using EasyTime.Model.Models;
+using EasyTime.Utilities.Sender;
 using Microsoft.EntityFrameworkCore;
 
 namespace EasyTime.Application.Services
@@ -64,6 +65,41 @@ namespace EasyTime.Application.Services
 
                             }).ToListAsync();
             return customers;
+        }
+
+        public async Task SendSmsForCustomer(List<Guid> customerIdes)
+        {
+            var users = await userRepository.GetAllEntities();
+            var reserves = await reserveRepository.GetAllEntities();
+            var times = await timeRepository.GetAllEntities();
+            var findUsersTimes = from u in users
+                                 join r in reserves
+                                    on u.Id equals r.UserId
+                                 join t in times
+                                    on r.BusinessOwnerTimeId equals t.Id
+                                 select new 
+                                 {
+                                     u.Id,
+                                     r.UserId,
+                                     r.BusinessOwnerTimeId,
+                                     t.From,
+                                     u.MobileNumber
+                                 };
+
+            var time = DateTime.Now.TimeOfDay;
+            var userForSms = (from c in customerIdes
+                              join s in findUsersTimes
+                                 on c equals s.UserId
+                              where time >= s.From - TimeSpan.FromMinutes(30) && time < s.From
+                              select c)
+                              .ToList();
+
+            foreach(var item in findUsersTimes)
+            {
+                SmsSender.SendSms(item.MobileNumber,"30 دیقیقه تا زمان آرایشگاه شما باقی مانده است");
+            }
+
+
         }
     }
 }
