@@ -4,6 +4,7 @@ using EasyTime.InfraStracure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTime.InfraStracure.Migrations
 {
     [DbContext(typeof(EasyTimeContext))]
-    partial class EasyTimeContextModelSnapshot : ModelSnapshot
+    [Migration("20250721094859_UpdatePlanTime")]
+    partial class UpdatePlanTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -350,9 +353,6 @@ namespace EasyTime.InfraStracure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<float>("BasePrice")
-                        .HasColumnType("real");
-
                     b.Property<DateTime>("CreateObjectDate")
                         .HasColumnType("datetime2");
 
@@ -365,6 +365,9 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.Property<long?>("PlanTimeId")
                         .HasColumnType("bigint");
+
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
 
                     b.Property<DateTime>("UpdateEntityDate")
                         .HasColumnType("datetime2");
@@ -384,9 +387,6 @@ namespace EasyTime.InfraStracure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<float>("AmountAdded")
-                        .HasColumnType("real");
-
                     b.Property<DateTime>("CreateObjectDate")
                         .HasColumnType("datetime2");
 
@@ -396,12 +396,12 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<long>("PlanId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("PlanName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("PlandId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("To")
                         .HasColumnType("datetime2");

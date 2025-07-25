@@ -4,6 +4,7 @@ using EasyTime.InfraStracure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTime.InfraStracure.Migrations
 {
     [DbContext(typeof(EasyTimeContext))]
-    partial class EasyTimeContextModelSnapshot : ModelSnapshot
+    [Migration("20250721085413_CreatePlanEntityies")]
+    partial class CreatePlanEntityies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -284,13 +287,7 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsExpire")
-                        .HasColumnType("bit");
-
                     b.Property<long>("PlanId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("PlanTimeId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("UpdateEntityDate")
@@ -302,8 +299,6 @@ namespace EasyTime.InfraStracure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PlanId");
-
-                    b.HasIndex("PlanTimeId");
 
                     b.HasIndex("UserId");
 
@@ -350,10 +345,10 @@ namespace EasyTime.InfraStracure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<float>("BasePrice")
-                        .HasColumnType("real");
-
                     b.Property<DateTime>("CreateObjectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpireDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDelete")
@@ -363,86 +358,18 @@ namespace EasyTime.InfraStracure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long?>("PlanTimeId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("UpdateEntityDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlanTimeId");
-
-                    b.ToTable("Plans");
-                });
-
-            modelBuilder.Entity("EasyTime.Model.Models.PlanTime", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<float>("AmountAdded")
+                    b.Property<float>("Price")
                         .HasColumnType("real");
 
-                    b.Property<DateTime>("CreateObjectDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("From")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<long>("PlanId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("PlanName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("To")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("UpdateEntityDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("PlanTimes");
-                });
-
-            modelBuilder.Entity("EasyTime.Model.Models.PlansInformation", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreateObjectDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<long>("PlanId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("PlanService")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdateEntityDate")
-                        .HasColumnType("datetime2");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PlanId");
-
-                    b.ToTable("PlansInformation");
+                    b.ToTable("Plans");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.Reserve", b =>
@@ -582,9 +509,6 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsExpire")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("UpdateEntityDate")
                         .HasColumnType("datetime2");
 
@@ -712,12 +636,6 @@ namespace EasyTime.InfraStracure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EasyTime.Model.Models.PlanTime", "PlanTime")
-                        .WithMany("BusinessOwnerPlans")
-                        .HasForeignKey("PlanTimeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EasyTime.Model.Models.User", "User")
                         .WithMany("BusinessOwnerPlans")
                         .HasForeignKey("UserId")
@@ -725,8 +643,6 @@ namespace EasyTime.InfraStracure.Migrations
                         .IsRequired();
 
                     b.Navigation("Plan");
-
-                    b.Navigation("PlanTime");
 
                     b.Navigation("User");
                 });
@@ -748,24 +664,6 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Navigation("BusinessDay");
 
                     b.Navigation("BusinessOwnerTime");
-                });
-
-            modelBuilder.Entity("EasyTime.Model.Models.Plan", b =>
-                {
-                    b.HasOne("EasyTime.Model.Models.PlanTime", null)
-                        .WithMany("Plans")
-                        .HasForeignKey("PlanTimeId");
-                });
-
-            modelBuilder.Entity("EasyTime.Model.Models.PlansInformation", b =>
-                {
-                    b.HasOne("EasyTime.Model.Models.Plan", "Plan")
-                        .WithMany("PlansInformation")
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Plan");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.Reserve", b =>
@@ -854,18 +752,6 @@ namespace EasyTime.InfraStracure.Migrations
             modelBuilder.Entity("EasyTime.Model.Models.BusinessDay", b =>
                 {
                     b.Navigation("BusinessTimes");
-                });
-
-            modelBuilder.Entity("EasyTime.Model.Models.Plan", b =>
-                {
-                    b.Navigation("PlansInformation");
-                });
-
-            modelBuilder.Entity("EasyTime.Model.Models.PlanTime", b =>
-                {
-                    b.Navigation("BusinessOwnerPlans");
-
-                    b.Navigation("Plans");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.Role", b =>

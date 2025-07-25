@@ -67,6 +67,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<ForgotPasswordValidation>()
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPlanService, PlanService>();
 builder.Services.AddScoped<IBusinesService, BusinesService>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

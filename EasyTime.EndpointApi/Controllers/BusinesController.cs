@@ -31,7 +31,7 @@ namespace EasyTime.EndpointApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("Bisineses")]
+        [HttpGet("Busineses")]
         public IActionResult GetBusinesesByNeighberhood(long neighberhoodId)
         {
              var result = businesService.FilterBusines(neighberhoodId);

@@ -22,5 +22,9 @@ namespace EasyTime.InfraStracure.Context
         public DbSet<UserBusinessOwner> UserBusinessOwners { get; set; }
         public DbSet<BusinessDay> BusinessDays { get; set; }
         public DbSet<BusinessTime> BusinessTimes { get; set; }
+        public DbSet<Plan> Plans { get; set; }
+        public DbSet<BusinessOwnerPlan> BusinessOwnerPlans { get; set; }
+        public DbSet<PlansInformation> PlansInformation { get; set; }
+        public DbSet<PlanTime> PlanTimes { get; set; }
     }
 }
