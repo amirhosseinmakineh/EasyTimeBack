@@ -16,7 +16,8 @@ namespace EasyTime.Model.Models
         public string? ImageName { get; set; }
         public Guid? TokenForChangePassword { get; set; }
         public DateTime? ExpireChangePasswordToken { get; set; }
-
+        public string? Description { get; set; }
+        public bool IsProfileComplete { get; set; }
         #region Relations
         public Role Role { get; set; }
         public ICollection<Business> Businesses { get; set; }

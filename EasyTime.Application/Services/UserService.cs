@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EasyTime.Application.Contract.Dtos;
+using EasyTime.Application.Contract.Dtos.BusinesDto;
 using EasyTime.Application.Contract.Dtos.BusinessOwnerDtos;
 using EasyTime.Application.Contract.IServices;
 using EasyTime.InfraStracure.UnitOfWork;
@@ -91,6 +92,18 @@ namespace EasyTime.Application.Services
             return Result<bool>.Failure("کاربری با این ایمیل یافت نشد");
         }
 
+        public async Task<Result<BusinessOwnerProfileDto>> GetBusinessOwnerProfile(Guid id)
+        {
+            var users = await repository.GetAllEntities();
+            var result = users.Select(x => new BusinessOwnerProfileDto()
+            {
+                Description = x.Description,
+                Family = x.Family,
+                ImageName = x.ImageName,
+                Name = x.UserName
+            }).FirstOrDefault(x=> x.Id == id);
+            return Result<BusinessOwnerProfileDto>.Success(result);
+        }
 
         public async Task<Result<string>> Login(UserLoginDto dto)
         {
@@ -119,7 +132,9 @@ namespace EasyTime.Application.Services
                 UpdateEntityDate = dto.UpdateObjectDate = DateTime.Now,
                 Password = PasswordHassher.HashPassword(dto.Password),
                 Email = dto.Email,
-                RoleId = 3
+                RoleId = 3,
+                IsProfileComplete = false,
+                Description = null
             };
             if(user.IsBusinesOwner == true)
             {

@@ -1,9 +1,10 @@
 ﻿using EasyTime.Application.Contract.Dtos.PlansDto;
+using EasyTime.Utilities.Convertor;
 
 namespace EasyTime.Application.Contract.IServices
 {
     public interface IPlanService
     {
-        Task<List<PlanDto>> GetAllPlans();
+        Task<Result<List<PlanDto>>> GetAllPlans();
     }
 }

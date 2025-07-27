@@ -69,6 +69,13 @@ namespace EasyTime.EndpointApi.Controllers
         {
             var resutl = userService.UpdateBusinessOwnerInfo(dto);
             return Ok(resutl);
-        } 
+        }
+
+        [HttpGet("BusinessOwnerProfile")]
+        public IActionResult GetBusinessOwnerProfile(Guid id)
+        {
+             var result = userService.GetBusinessOwnerProfile(id);
+            return Ok(result);
+        }
     }
 }

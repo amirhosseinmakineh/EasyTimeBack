@@ -1,7 +1,5 @@
 ﻿using EasyTime.Application.Contract.IServices;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace EasyTime.EndpointApi.Controllers
 {

@@ -2,6 +2,8 @@
 using EasyTime.Application.Contract.IServices;
 using EasyTime.Model.IRepository;
 using EasyTime.Model.Models;
+using EasyTime.Utilities.Convertor;
+using System.Collections.Generic;
 
 namespace EasyTime.Application.Services
 {
@@ -20,7 +22,7 @@ namespace EasyTime.Application.Services
             this.businessOwnerPlan = businessOwnerPlan;
         }
 
-        public async Task<List<PlanDto>> GetAllPlans()
+        public async Task<Result<List<PlanDto>>> GetAllPlans()
         {
             var plans = await planRepository.GetAllEntities();
             var plansInfos = await planInforReepository.GetAllEntities();
@@ -48,7 +50,7 @@ namespace EasyTime.Application.Services
                               PlanTimeName = pl.PlanName,
                           }).ToList();
 
-            return result;
+            return Result<List<PlanDto>>.Success(result);
         }
     }
 }
