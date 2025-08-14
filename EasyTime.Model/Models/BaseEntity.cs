@@ -7,6 +7,6 @@ namespace EasyTime.Model.Models
         public Tkey Id { get; set; }
         public bool IsDelete { get; set; }
         public DateTime CreateObjectDate { get; set; }
-        public DateTime UpdateEntityDate { get; set; }
+        public DateTime? UpdateEntityDate { get; set; }
     }
 }

@@ -1,14 +1,18 @@
 ﻿using AutoMapper;
 using EasyTime.Application.Contract.Dtos.BusinesDto;
+using EasyTime.Application.Contract.Dtos.BusinessServices;
+using EasyTime.Application.Contract.Dtos.Category;
+using EasyTime.Application.Contract.Dtos.Service;
 using EasyTime.Application.Contract.IServices;
 using EasyTime.InfraStracure.UnitOfWork;
 using EasyTime.Model.IRepository;
 using EasyTime.Model.Models;
 using EasyTime.Utilities.Convertor;
 using Microsoft.EntityFrameworkCore;
+
 namespace EasyTime.Application.Services
 {
-    public class BusinesService(IBaseRepository<long, BusinesCity> cityRepository, IBaseRepository<long, UserBusinessOwner> userBusinessOwnerRepository, IBaseRepository<long, BusinesRegion> regionRepository, IBaseRepository<long, BusinesNeighberhood> neighberhoodRepository, IBaseRepository<long, Business> businessRepository, IBaseRepository<Guid, User> userRepository, IBaseRepository<long, BusinessOwnerDay> businessOwnerDayRepository, IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository, IBaseRepository<Guid, User> businessOwnerRepository, IBaseRepository<long, Reserve> reserveRepository, IMapper mapper) : IBusinesService, IService
+    public class BusinesService(IBaseRepository<long, BusinesCity> cityRepository, IBaseRepository<long, UserBusinessOwner> userBusinessOwnerRepository, IBaseRepository<long, BusinesRegion> regionRepository, IBaseRepository<long, BusinesNeighberhood> neighberhoodRepository, IBaseRepository<long, Business> businessRepository, IBaseRepository<Guid, User> userRepository, IBaseRepository<long, BusinessOwnerDay> businessOwnerDayRepository, IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository, IBaseRepository<Guid, User> businessOwnerRepository, IBaseRepository<long, Reserve> reserveRepository, IMapper mapper, IBaseRepository<int, Category> categoryRepository, IBaseRepository<long, Service> serviceRepository, IBaseRepository<long, BusinessServices> businessServiceRepository) : IBusinesService, IService
     {
         private readonly IBaseRepository<long, BusinesCity> cityRepository = cityRepository;
         private readonly IBaseRepository<long, BusinesRegion> regionRepository = regionRepository;
@@ -20,23 +24,56 @@ namespace EasyTime.Application.Services
         private readonly IBaseRepository<long, BusinessOwnerTime> businessOwnerTimeRepository = businessOwnerTimeRepository;
         private readonly IBaseRepository<Guid, User> businessOwnerRepository = businessOwnerRepository;
         private readonly IBaseRepository<long, Reserve> reserveRepository = reserveRepository;
+        private readonly IBaseRepository<int, Category> categoryRepository;
+        private readonly IBaseRepository<long, Service> serviceRepository;
+        private readonly IBaseRepository<long, EasyTime.Model.Models.BusinessServices> businessServiceRepository;
         private readonly IMapper mapper = mapper;
 
-        public async Task<IQueryable<BusinessDto>> FilterBusines(long neighberhoodId)
+        public async Task<List<BusinessDto>> FilterBusinesses(
+            long neighborhoodId,
+            int skip = 0,
+            int take = 6,
+            float? maxAmount = null,
+            int? categoryId = null)
         {
-            var busineses = await businessRepository.GetAllEntities();
-            var result = busineses
-                .Include(x => x.User)
-                .Where(x => x.NeighberhoodId == neighberhoodId)
-                .Select(x => new BusinessDto()
-                {
-                    BusinessLogo = $"Images/{x.Logo}",
-                    BusinessName = x.Name,
-                    BusinessOwnerName = x.User.UserName,
-                    Id = x.Id
-                });
+            var bq = await businessRepository.GetAllEntities();
+            var bsq = await businessServiceRepository.GetAllEntities();
+
+            if (maxAmount is null)
+            {
+                maxAmount = await bsq.Where(s => s.Business.NeighberhoodId == neighborhoodId)
+                                     .Select(s => s.Amount)
+                                     .DefaultIfEmpty()
+                                     .MaxAsync();
+            }
+            var q =
+                from b in bq
+                join bs in bsq on b.Id equals bs.BusinessId
+                where b.NeighberhoodId == neighborhoodId
+                      && bs.Amount >= 0
+                      && bs.Amount <= maxAmount
+                select b;
+
+            if (categoryId is not null && categoryId != 0)
+                q = q.Where(b => b.CategoryId == categoryId);
+
+            var result = await q.AsNoTracking()
+                                .Distinct()
+                                .OrderBy(b => b.Id)
+                                .Skip(skip)
+                                .Take(take)
+                                .Select(b => new BusinessDto
+                                {
+                                    Id = b.Id,
+                                    BusinessName = b.Name,
+                                    BusinessOwnerName = b.User.UserName,
+                                    BusinessLogo = "Images/" + b.Logo
+                                })
+                                .ToListAsync();
+
             return result;
         }
+
 
         public async Task<BusinessPlaceDto> FilterBusinesByPlace(long? businesCityId, long? regionId)
         {
@@ -187,6 +224,40 @@ namespace EasyTime.Application.Services
                 Id = c.Id,
                 Name = c.Name
             }).ToList();
+        }
+
+        public async Task<List<CategoryDto>> GetAllCategories()
+        {
+            var categories = await categoryRepository.
+                GetAllEntities();
+            var result = categories.Select(x => new CategoryDto()
+            {
+                CategoryId = x.Id,
+                Name = x.Name
+            }).ToList();
+            return result;
+        }
+
+        public async Task<List<ServiceDto>> GetServicseWithCategory(int categoryId)
+        {
+            var services = await serviceRepository.
+                 GetAllEntities();
+            var result = services
+                .Where(x => x.CategoryId == categoryId).Select(x => new ServiceDto()
+                {
+                    CategoryId = x.CategoryId,
+                    ServiceId = x.Id,
+                    ServiceName = x.ServiceName
+                }).ToList();
+            return result;
+        }
+
+        public async Task<float> GetBusinessServicesAmount()
+        {
+            var busineses = await businessServiceRepository.GetAllEntities();
+            var maxAmount = busineses.Max(x => x.Amount);
+            return maxAmount;
+
         }
     }
 }

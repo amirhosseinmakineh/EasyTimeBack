@@ -11,6 +11,7 @@ namespace EasyTime.Model.Models
         public long CityId { get; set; }
         public long RegionId { get; set; }
         public long NeighberhoodId { get; set; }
+        public int? CategoryId { get; set; }
         [ForeignKey("BusinessOwnerId")]
         public User User { get; set; }
         [ForeignKey("CityId")]
@@ -19,10 +20,12 @@ namespace EasyTime.Model.Models
         public BusinesRegion BusinesRegion { get; set; }
         [ForeignKey("NeighberhoodId")]
         public BusinesNeighberhood BusinesNeighberhood { get; set; }
+        [ForeignKey("CategoryId")]
+        public Category Category { get; set; }
         public ICollection<BusinessOwnerDay> BusinessOwnerDays { get; set; }
         public ICollection<BusinessOwnerTime> BusinessOwnerTimes { get; set; }
         public ICollection<BusinessDay> BusinessDays { get; set; }
-
+        public ICollection<BusinessServices> BusinessServices { get; set; }
     }
 
 }

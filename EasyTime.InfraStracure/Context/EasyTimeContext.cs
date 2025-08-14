@@ -26,5 +26,8 @@ namespace EasyTime.InfraStracure.Context
         public DbSet<BusinessOwnerPlan> BusinessOwnerPlans { get; set; }
         public DbSet<PlansInformation> PlansInformation { get; set; }
         public DbSet<PlanTime> PlanTimes { get; set; }
+        public DbSet<Service> Services { get; set; }
+        public DbSet<Category> Category { get; set; }
+        public DbSet<BusinessServices> BusinessServices { get; set; }
     }
 }
