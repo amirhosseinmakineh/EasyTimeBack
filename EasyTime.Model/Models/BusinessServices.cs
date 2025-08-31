@@ -7,7 +7,7 @@ namespace EasyTime.Model.Models
 
         public long BusinessId { get; set; }
         public long  ServiceId { get; set; }
-        public float Amount  { get; set; }
+        public decimal Amount  { get; set; }
 
         #region Relations
         [ForeignKey("BusinessId")]

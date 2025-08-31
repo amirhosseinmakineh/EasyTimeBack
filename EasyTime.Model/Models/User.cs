@@ -1,4 +1,5 @@
-﻿using EasyTime.Utilities.Sender;
+﻿using EasyTime.Model.Enums;
+using EasyTime.Utilities.Sender;
 
 namespace EasyTime.Model.Models
 {
@@ -22,6 +23,10 @@ namespace EasyTime.Model.Models
         public Role Role { get; set; }
         public ICollection<Business> Businesses { get; set; }
         public ICollection<BusinessOwnerPlan> BusinessOwnerPlans { get; set; }
+        public ICollection<Achievements> Achievements { get; set; }
+        public ICollection<Rate> Rates { get; set; }
+        public ICollection<User> Users { get; set; }
         #endregion
     }
+
 }

@@ -1,4 +1,8 @@
-﻿namespace EasyTime.Application.Contract.Dtos.BusinesDto
+﻿using EasyTime.Application.Contract.Dtos.Achevment;
+using EasyTime.Application.Contract.Dtos.Comments;
+using EasyTime.Application.Contract.Dtos.Service;
+
+namespace EasyTime.Application.Contract.Dtos.BusinesDto
 {
     public class BusinessDetailDto
     {
@@ -14,5 +18,9 @@
         public string RegionName { get; set; } = string.Empty;
         public string NeighberhoodName { get; set; } = string.Empty;
         public  List<BusinessOwnerDayDto> BusinessOwnerDayDtos { get; set; }
+        public string? BannerName { get; set; }
+        public ICollection<BusinessServiceDto> BusinessServiceDtos { get; set; }
+        public ICollection<CommentDto> CommentDtos { get; set; }
+        public ICollection<AchievementDto> AchievementDtos { get; set; }
     }
 }

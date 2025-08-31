@@ -29,5 +29,8 @@ namespace EasyTime.InfraStracure.Context
         public DbSet<Service> Services { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<BusinessServices> BusinessServices { get; set; }
+        public DbSet<Achievements> Achievements { get; set; }
+        public DbSet<Rate> Rates { get; set; }
+        public DbSet<Comment> Comments { get; set; }
     }
 }

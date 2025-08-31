@@ -1,6 +1,7 @@
 ﻿using EasyTime.Application.Contract.Dtos.BusinesDto;
 using EasyTime.Application.Contract.IServices;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace EasyTime.EndpointApi.Controllers
 {
@@ -29,12 +30,12 @@ namespace EasyTime.EndpointApi.Controllers
         }
 
         [HttpGet("Busineses")]
-        public IActionResult GetBusinesesByNeighberhood(long neighberhoodId)
+        public async Task<IActionResult> GetBusinesesByNeighberhood(long neighberhoodId,[FromQuery]List<long>? serviceIds, [FromQuery]int? categoryId, int skip = 0, int take = 6, decimal? maxAmount = 0)
         {
-            var result = businesService.FilterBusines(neighberhoodId);
+            var result = await businesService.FilterBusinesses(neighberhoodId, serviceIds, categoryId,skip, take,maxAmount);
             return Ok(result);
         }
-
+        
         [HttpPost("Reserve")]
         public async Task<IActionResult> Reserve(ReserveDto dto)
         {
@@ -60,6 +61,24 @@ namespace EasyTime.EndpointApi.Controllers
         public async Task<IActionResult> GetServicesWithCategory(int categoryId)
         {
             var result = await businesService.GetServicseWithCategory(categoryId);
+            return Ok(result);
+        }
+        [HttpGet("GetSelectedPlaces")]
+        public IActionResult GetSelectedPlaces(long cityId , long regionId , long neighberHoodId)
+        {
+            var result = businesService.GetSelectedPlace(cityId,regionId,neighberHoodId);
+            return Ok(result);
+        }
+        [HttpGet("GetBusinessService")]
+        public async Task<IActionResult> GetBusinessService()
+        {
+            var result = await businesService.GetAllServices();
+            return Ok(result);
+        }
+        [HttpGet("GetMaxServiceAmount")]
+        public async Task<IActionResult> GetMaxServiceAmount()
+        {
+            var result = await businesService.GetBusinessServicesAmount();
             return Ok(result);
         }
     }

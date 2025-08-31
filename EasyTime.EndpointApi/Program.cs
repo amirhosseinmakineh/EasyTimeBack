@@ -19,7 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(c =>
     c.AddPolicy("CorsPolicy", builder =>
-        builder.WithOrigins("http://localhost:3000")
+        builder.WithOrigins("http://localhost:4200")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials()
@@ -69,6 +69,7 @@ builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>)
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPlanService, PlanService>();
 builder.Services.AddScoped<IBusinesService, BusinesService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<UnitOfWorkAttributeManager>();

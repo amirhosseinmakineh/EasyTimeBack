@@ -4,6 +4,7 @@ using EasyTime.InfraStracure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTime.InfraStracure.Migrations
 {
     [DbContext(typeof(EasyTimeContext))]
-    partial class EasyTimeContextModelSnapshot : ModelSnapshot
+    [Migration("20250824130357_CreateRateAndUserRateTables")]
+    partial class CreateRateAndUserRateTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -222,10 +225,6 @@ namespace EasyTime.InfraStracure.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("BannerName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("BusinessOwnerId")
                         .HasColumnType("uniqueidentifier");
@@ -443,45 +442,6 @@ namespace EasyTime.InfraStracure.Migrations
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("EasyTime.Model.Models.Comment", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("BusinessId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CommentText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreateObjectDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsLocked")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("UpdateEntityDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BusinessId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Comments");
-                });
-
             modelBuilder.Entity("EasyTime.Model.Models.Plan", b =>
                 {
                     b.Property<long>("Id")
@@ -605,12 +565,7 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<DateTime?>("UpdateEntityDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Rates");
                 });
@@ -761,9 +716,6 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Property<DateTime?>("UpdateEntityDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -771,8 +723,6 @@ namespace EasyTime.InfraStracure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Users");
                 });
@@ -808,6 +758,38 @@ namespace EasyTime.InfraStracure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserBusinessOwners");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.UserRate", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreateObjectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("RateId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdateEntityDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RateId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRates");
                 });
 
             modelBuilder.Entity("BusinessOwnerDay", b =>
@@ -998,25 +980,6 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Navigation("BusinessOwnerTime");
                 });
 
-            modelBuilder.Entity("EasyTime.Model.Models.Comment", b =>
-                {
-                    b.HasOne("EasyTime.Model.Models.Business", "Business")
-                        .WithMany("Comments")
-                        .HasForeignKey("BusinessId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EasyTime.Model.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Business");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("EasyTime.Model.Models.Plan", b =>
                 {
                     b.HasOne("EasyTime.Model.Models.PlanTime", null)
@@ -1033,17 +996,6 @@ namespace EasyTime.InfraStracure.Migrations
                         .IsRequired();
 
                     b.Navigation("Plan");
-                });
-
-            modelBuilder.Entity("EasyTime.Model.Models.Rate", b =>
-                {
-                    b.HasOne("EasyTime.Model.Models.User", "User")
-                        .WithMany("Rates")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.Reserve", b =>
@@ -1084,10 +1036,6 @@ namespace EasyTime.InfraStracure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EasyTime.Model.Models.User", null)
-                        .WithMany("Users")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("Role");
                 });
 
@@ -1098,6 +1046,25 @@ namespace EasyTime.InfraStracure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EasyTime.Model.Models.UserRate", b =>
+                {
+                    b.HasOne("EasyTime.Model.Models.Rate", "Rate")
+                        .WithMany("UserRates")
+                        .HasForeignKey("RateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EasyTime.Model.Models.User", "User")
+                        .WithMany("UserRates")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Rate");
 
                     b.Navigation("User");
                 });
@@ -1144,8 +1111,6 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Navigation("BusinessOwnerTimes");
 
                     b.Navigation("BusinessServices");
-
-                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("EasyTime.Model.Models.BusinessDay", b =>
@@ -1172,6 +1137,11 @@ namespace EasyTime.InfraStracure.Migrations
                     b.Navigation("Plans");
                 });
 
+            modelBuilder.Entity("EasyTime.Model.Models.Rate", b =>
+                {
+                    b.Navigation("UserRates");
+                });
+
             modelBuilder.Entity("EasyTime.Model.Models.Role", b =>
                 {
                     b.Navigation("Users");
@@ -1190,9 +1160,7 @@ namespace EasyTime.InfraStracure.Migrations
 
                     b.Navigation("Businesses");
 
-                    b.Navigation("Rates");
-
-                    b.Navigation("Users");
+                    b.Navigation("UserRates");
                 });
 #pragma warning restore 612, 618
         }
