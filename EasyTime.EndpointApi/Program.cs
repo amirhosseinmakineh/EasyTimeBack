@@ -14,6 +14,7 @@ using EasyTime.Model.IRepository;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using EasyTime.Utilities.Sender;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -74,6 +75,8 @@ builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<UnitOfWorkAttributeManager>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<SmsSender>();
 builder.Services.AddHostedService<CustomerSmsHostedService>();
 #region RegisterAutofact
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory(x =>

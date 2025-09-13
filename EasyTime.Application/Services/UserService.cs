@@ -12,7 +12,7 @@ namespace EasyTime.Application.Services
 {
     public class UserService : IUserService , IService
     {
-        private readonly EmailService emailService = new EmailService();
+        private readonly EmailService emailService;
         private readonly IBaseRepository<Guid, User> repository;
         private readonly ITokenGenerator tokenGenerator;
         private readonly IBaseRepository<long, Business> businessRepository;
@@ -20,7 +20,7 @@ namespace EasyTime.Application.Services
         private readonly IBaseRepository<long, BusinessTime> businessTimeRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
-        public UserService(IMapper mapper, IBaseRepository<Guid, User> repository, ITokenGenerator tokenGenerator, IBaseRepository<long, Business> businessRepository, IBaseRepository<long, BusinessDay> businessDayRepository, IBaseRepository<long, BusinessTime> businessTimeRepository, IUnitOfWork unitOfWork)
+        public UserService(IMapper mapper, IBaseRepository<Guid, User> repository, ITokenGenerator tokenGenerator, IBaseRepository<long, Business> businessRepository, IBaseRepository<long, BusinessDay> businessDayRepository, IBaseRepository<long, BusinessTime> businessTimeRepository, IUnitOfWork unitOfWork, EmailService emailService)
         {
             this.repository = repository;
             this.tokenGenerator = tokenGenerator;
@@ -29,6 +29,7 @@ namespace EasyTime.Application.Services
             this.businessDayRepository = businessDayRepository;
             this.businessTimeRepository = businessTimeRepository;
             this.unitOfWork = unitOfWork;
+            this.emailService = emailService;
         }
 
         public async Task<Result<string>> ChangePassword(string newPassword, Guid expireToken)

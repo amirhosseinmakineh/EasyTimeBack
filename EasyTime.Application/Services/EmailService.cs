@@ -2,16 +2,24 @@
 using MimeKit.Text;
 using MimeKit;
 using MailKit.Net.Smtp;
+using Microsoft.Extensions.Configuration;
 
 namespace EasyTime.Application.Services
 {
     public class EmailService
     {
-        private readonly string _smtpServer = "smtp.gmail.com";
-        private readonly int _port = 587;
-        private readonly string _senderEmail = "amirhosseinmakineh1379@gmail.com";
-        //private readonly string _password = "wlzvkgwryllfiyk";
-        private readonly string _password = "osbz qvom ddni nyhg";
+        private readonly string _smtpServer;
+        private readonly int _port;
+        private readonly string _senderEmail;
+        private readonly string _password;
+
+        public EmailService(IConfiguration configuration)
+        {
+            _smtpServer = configuration["Smtp:Host"] ?? string.Empty;
+            _port = int.TryParse(configuration["Smtp:Port"], out var port) ? port : 25;
+            _senderEmail = configuration["Smtp:User"] ?? string.Empty;
+            _password = configuration["Smtp:Password"] ?? string.Empty;
+        }
 
         public async Task SendEmailAsync(string toEmail, string subject, string resetPasswordUrl)
         {
@@ -49,7 +57,7 @@ namespace EasyTime.Application.Services
                 email.Body = new TextPart(TextFormat.Html) { Text = emailBody };
 
                 using var smtp = new SmtpClient();
-                await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                await smtp.ConnectAsync(_smtpServer, _port, SecureSocketOptions.StartTls);
                 await smtp.AuthenticateAsync(_senderEmail, _password); // باید App Password باشد
                 await smtp.SendAsync(email);
                 await smtp.DisconnectAsync(true);

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Kavenegar" Version="1.2.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
 </Project>
