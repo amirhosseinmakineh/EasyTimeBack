@@ -16,8 +16,9 @@ namespace EasyTime.Application.Services
         private readonly IBaseRepository<long, BusinessOwnerTime> timeRepository;
         private readonly IBaseRepository<long, Reserve> reserveRepository;
         private readonly IBaseRepository<long, UserBusinessOwner> userBusinessOwnerRepository;
+        private readonly SmsSender smsSender;
 
-        public CustomerService(IBaseRepository<Guid, User> userRepository, IBaseRepository<long, Business> businessRepository, IBaseRepository<long, BusinessOwnerDay> dayRepository, IBaseRepository<long, BusinessOwnerTime> timeRepository, IBaseRepository<long, Reserve> reserveRepository, IBaseRepository<long, UserBusinessOwner> userBusinessOwnerRepository)
+        public CustomerService(IBaseRepository<Guid, User> userRepository, IBaseRepository<long, Business> businessRepository, IBaseRepository<long, BusinessOwnerDay> dayRepository, IBaseRepository<long, BusinessOwnerTime> timeRepository, IBaseRepository<long, Reserve> reserveRepository, IBaseRepository<long, UserBusinessOwner> userBusinessOwnerRepository, SmsSender smsSender)
         {
             this.userRepository = userRepository;
             this.businessRepository = businessRepository;
@@ -25,6 +26,7 @@ namespace EasyTime.Application.Services
             this.timeRepository = timeRepository;
             this.reserveRepository = reserveRepository;
             this.userBusinessOwnerRepository = userBusinessOwnerRepository;
+            this.smsSender = smsSender;
         }
 
         public async Task<List<CustomerDto>> GetAllCustomer(Guid businessOwnerId)
@@ -96,7 +98,7 @@ namespace EasyTime.Application.Services
 
             foreach(var item in findUsersTimes)
             {
-                SmsSender.SendSms(item.MobileNumber,"30 دیقیقه تا زمان آرایشگاه شما باقی مانده است");
+                await smsSender.SendSms(item.MobileNumber,"30 دیقیقه تا زمان آرایشگاه شما باقی مانده است");
             }
 
 

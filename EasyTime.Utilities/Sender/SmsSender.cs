@@ -1,15 +1,24 @@
-﻿using Kavenegar;
+using Kavenegar;
+using Microsoft.Extensions.Configuration;
+
 namespace EasyTime.Utilities.Sender
 {
-    public static class SmsSender
+    public class SmsSender
     {
-        public static  async Task SendSms(string receptor,string message)
+        private readonly string _sender;
+        private readonly string _apiKey;
+
+        public SmsSender(IConfiguration configuration)
         {
-            string sender = "2000660110";
-            var reciver = receptor;
-            var bodyMesage = message;
-            var api = new KavenegarApi("58445A64466F4F7663796A415A314C716F7363374277534E70526D654D614B2F56393636777457466862593D");
-            api.Send(sender, reciver, bodyMesage);
+            _sender = configuration["Sms:Sender"] ?? string.Empty;
+            _apiKey = configuration["Sms:ApiKey"] ?? string.Empty;
+        }
+
+        public Task SendSms(string receptor, string message)
+        {
+            var api = new KavenegarApi(_apiKey);
+            api.Send(_sender, receptor, message);
+            return Task.CompletedTask;
         }
     }
 }

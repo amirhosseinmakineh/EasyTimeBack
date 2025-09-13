@@ -1,5 +1,6 @@
-﻿using EasyTime.Application.Contract.IServices;
+using EasyTime.Application.Contract.IServices;
 using EasyTime.Model.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,6 +10,17 @@ namespace EasyTime.Application.Generator
 {
     public class TokenGenerator : ITokenGenerator
     {
+        private readonly string _jwtSecret;
+        private readonly string _issuer;
+        private readonly string _audience;
+
+        public TokenGenerator(IConfiguration configuration)
+        {
+            _jwtSecret = configuration["Jwt:Secret"] ?? string.Empty;
+            _issuer = configuration["Jwt:Issuer"] ?? "www.easytime.com";
+            _audience = configuration["Jwt:Audience"] ?? "www.easytime.com";
+        }
+
         public async Task<string> GenerateToken(User user)
         {
             var claims = new List<Claim>()
@@ -21,11 +33,11 @@ namespace EasyTime.Application.Generator
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
-                Audience = "www.easytime.com",
-                Issuer = "www.easytime.com",
+                Audience = _audience,
+                Issuer = _issuer,
                 Expires = DateTime.Now.AddMonths(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(
-                    Encoding.ASCII.GetBytes("I-Am-Amirhossein-Makineh-Secret-Key-2025")), SecurityAlgorithms.HmacSha256Signature)
+                    Encoding.ASCII.GetBytes(_jwtSecret)), SecurityAlgorithms.HmacSha256Signature)
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -34,7 +46,7 @@ namespace EasyTime.Application.Generator
             return result;
         }
 
-        public  ClaimsPrincipal ValidateToken(string token)
+        public ClaimsPrincipal ValidateToken(string token)
         {
             var parameters = new TokenValidationParameters()
             {
@@ -42,11 +54,11 @@ namespace EasyTime.Application.Generator
                 ValidateAudience = false,
                 RequireExpirationTime = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("I-Am-Amirhossein-Makineh-Secret-Key-2025"))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSecret))
             };
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             tokenHandler.CanReadToken(token);
-            return  tokenHandler.ValidateToken(token, parameters, out SecurityToken securityToken);
+            return tokenHandler.ValidateToken(token, parameters, out SecurityToken _);
         }
     }
 }
