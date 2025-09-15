@@ -9,6 +9,7 @@ namespace EasyTime.Model.Models
         public int RoleId { get; set; }
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public string PasswordSalt { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public string MobileNumber { get; set; } = string.Empty;
         public bool IsBusinesOwner { get; set; }

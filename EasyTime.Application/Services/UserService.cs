@@ -46,8 +46,9 @@ namespace EasyTime.Application.Services
             }
             else
             {
-                newPassword = PasswordHassher.HashPassword(newPassword);
-                user.Password = newPassword;
+                var hashed = PasswordHasher.HashPassword(newPassword, out var salt);
+                user.Password = hashed;
+                user.PasswordSalt = salt;
                 user.TokenForChangePassword = null;
                 user.ExpireChangePasswordToken = null;
                 await repository.Update(user);
@@ -109,8 +110,8 @@ namespace EasyTime.Application.Services
         public async Task<Result<string>> Login(UserLoginDto dto)
         {
             var users = await repository.GetAllEntities();
-            var user = users.FirstOrDefault(x => x.Email == dto.Email && x.Password == PasswordHassher.HashPassword(dto.Password));
-            if (user != null)
+            var user = users.FirstOrDefault(x => x.Email == dto.Email);
+            if (user != null && PasswordHasher.VerifyPassword(dto.Password, user.PasswordSalt, user.Password))
             {
                 var token = await tokenGenerator.GenerateToken(user);
                 return Result<string>.Success(user.Id.ToString(), $" Token Is : {token},Register Success");
@@ -123,6 +124,7 @@ namespace EasyTime.Application.Services
             bool result = false;
 
             var users = await repository.GetAllEntities();
+            var hashedPassword = PasswordHasher.HashPassword(dto.Password, out var salt);
             var user = new User()
             {
                 Id = dto.Id = Guid.NewGuid(),
@@ -131,7 +133,8 @@ namespace EasyTime.Application.Services
                 IsDelete = dto.IsDelete = false,
                 CreateObjectDate = dto.CreateObjectDate = DateTime.Now,
                 UpdateEntityDate = dto.UpdateObjectDate = DateTime.Now,
-                Password = PasswordHassher.HashPassword(dto.Password),
+                Password = hashedPassword,
+                PasswordSalt = salt,
                 Email = dto.Email,
                 RoleId = 3,
                 IsProfileComplete = false,
