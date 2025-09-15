@@ -5,11 +5,9 @@ using EasyTime.Application.Contract.Dtos.Comments;
 using EasyTime.Application.Contract.Dtos.Service;
 using EasyTime.Application.Contract.IServices;
 using EasyTime.InfraStracure.UnitOfWork;
-using EasyTime.Model.Enums;
 using EasyTime.Model.IRepository;
 using EasyTime.Model.Models;
 using EasyTime.Utilities.Convertor;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EasyTime.Application.Services
@@ -227,12 +225,12 @@ namespace EasyTime.Application.Services
                                         ServiceId = x.Service.Id,
                                         Amount = x.Amount
                                     }).ToList(),
-                                    AchievementDtos = achievements.Where(x=> x.UserId == u.Id).Select(x=> new Contract.Dtos.Achevment.AchievementDto()
+                                    AchievementDtos = achievements.Where(x => x.UserId == u.Id).Select(x => new Contract.Dtos.Achevment.AchievementDto()
                                     {
                                         Name = a.Name,
                                         UserId = a.UserId
                                     }).ToList(),
-                                    CommentDtos = comments.Where(x=> x.BusinessId == b.Id).Select(x=> new CommentDto()
+                                    CommentDtos = comments.Where(x => x.BusinessId == b.Id).Select(x => new CommentDto()
                                     {
                                         BusinessId = b.Id,
                                         CommentId = x.Id,
