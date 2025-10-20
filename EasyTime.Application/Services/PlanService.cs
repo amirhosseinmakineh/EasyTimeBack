@@ -24,10 +24,10 @@ namespace EasyTime.Application.Services
 
         public async Task<Result<List<PlanDto>>> GetAllPlans()
         {
-            var plans = await planRepository.GetAllEntities();
-            var plansInfos = await planInforReepository.GetAllEntities();
-            var planTimes = await planTimeRepository.GetAllEntities();
-            var businessOwnerPlans = await businessOwnerPlan.GetAllEntities();
+            var plans =  planRepository.GetAllEntities();
+            var plansInfos =  planInforReepository.GetAllEntities();
+            var planTimes =  planTimeRepository.GetAllEntities();
+            var businessOwnerPlans =  businessOwnerPlan.GetAllEntities();
 
             var result = (from p in plans
                           join pl in planTimes

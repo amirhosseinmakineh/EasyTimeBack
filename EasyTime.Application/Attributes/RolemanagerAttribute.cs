@@ -1,4 +1,5 @@
 ﻿using EasyTime.Application.Contract.IServices;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace EasyTime.Application.Attributes
@@ -33,10 +34,13 @@ namespace EasyTime.Application.Attributes
                     return;
                 }
             }
-            if (autorize == false)
+            if (!autorize)
             {
+                context.Result = new RedirectToActionResult("Login", "Home", new { area = "" });
+                context.HttpContext.Items["AccessDeniedMessage"] = "شما به این بخش دسترسی ندارید.";
                 return;
             }
+
             base.OnActionExecuting(context);
         }
     }

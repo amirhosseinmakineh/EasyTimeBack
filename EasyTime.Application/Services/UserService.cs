@@ -1,16 +1,19 @@
 ﻿using AutoMapper;
 using EasyTime.Application.Contract.Dtos;
+using EasyTime.Application.Contract.Dtos.Achevment;
 using EasyTime.Application.Contract.Dtos.BusinesDto;
 using EasyTime.Application.Contract.Dtos.BusinessOwnerDtos;
+using EasyTime.Application.Contract.Dtos.Comments;
 using EasyTime.Application.Contract.IServices;
 using EasyTime.InfraStracure.UnitOfWork;
 using EasyTime.Model.IRepository;
 using EasyTime.Model.Models;
 using EasyTime.Utilities.Convertor;
+using Microsoft.EntityFrameworkCore;
 
 namespace EasyTime.Application.Services
 {
-    public class UserService : IUserService , IService
+    public class UserService : IUserService, IService
     {
         private readonly EmailService emailService;
         private readonly IBaseRepository<Guid, User> repository;
@@ -34,7 +37,7 @@ namespace EasyTime.Application.Services
 
         public async Task<Result<string>> ChangePassword(string newPassword, Guid expireToken)
         {
-            var users = await repository.GetAllEntities();
+            var users = repository.GetAllEntities();
             var user = users.FirstOrDefault(x => x.TokenForChangePassword == expireToken);
             var check = await CheckResetToken(expireToken);
             if (check.IsSuccess)
@@ -58,7 +61,7 @@ namespace EasyTime.Application.Services
 
         public async Task<Result<string>> CheckResetToken(Guid TokenForChangePassword)
         {
-            var users = await repository.GetAllEntities();
+            var users = repository.GetAllEntities();
             var user = users.FirstOrDefault(x => x.TokenForChangePassword == TokenForChangePassword);
             var tokenTime = DateTime.Now - user.ExpireChangePasswordToken;
             if (tokenTime < TimeSpan.FromMinutes(15))
@@ -73,7 +76,7 @@ namespace EasyTime.Application.Services
 
         public async Task<Result<bool>> ForgotPassword(UserDto dto)
         {
-            var users = await repository.GetAllEntities(); // GetAll باید AsNoTracking داشته باشه
+            var users = repository.GetAllEntities(); // GetAll باید AsNoTracking داشته باشه
             var user = users.FirstOrDefault(x => x.Email == dto.Email);
 
             if (user != null)
@@ -96,20 +99,82 @@ namespace EasyTime.Application.Services
 
         public async Task<Result<BusinessOwnerProfileDto>> GetBusinessOwnerProfile(Guid id)
         {
-            var users = await repository.GetAllEntities();
-            var result = users.Select(x => new BusinessOwnerProfileDto()
+            var users = repository.GetAllEntities();
+            var profile = await users
+            .AsNoTracking()
+            .Where(x => x.Id == id && x.IsBusinesOwner)
+            .Select(x => new BusinessOwnerProfileDto
             {
-                Description = x.Description,
+                Id = x.Id,
+                Name = x.UserName,
+                Banner = x.Banner,
+                AboutMe = x.AboutMe,
                 Family = x.Family,
                 ImageName = x.ImageName,
-                Name = x.UserName
-            }).FirstOrDefault(x=> x.Id == id);
-            return Result<BusinessOwnerProfileDto>.Success(result);
+
+                Achievements = x.Achievements.Select(a => new AchievementDto
+                {
+                    Name = a.Name,
+                    UserId = a.UserId
+                }).ToList(),
+
+                BusinessInfo = x.Businesses
+                .Select(b => new BusinessDto
+                {
+                    BusinessName = b.Name,
+                    Description = b.Description
+                })
+                .FirstOrDefault(),
+
+                WorkHistory = x.WorkHistory
+            })
+                .FirstOrDefaultAsync();
+
+            var comments = await users
+            .AsNoTracking()
+            .Where(b => b.Id == id)
+            .SelectMany(b => b.Businesses)
+            .SelectMany(b => b.Comments)
+            .Select(c => new CommentDto
+            {
+                CommentId = c.Id,
+                BusinessId = c.BusinessId,
+                CommentText = c.CommentText,
+                UserId = c.UserId
+            })
+            .ToListAsync();
+
+            var takingTurns = await users
+                .AsNoTracking()
+                .Where(u => u.Id == id && u.IsBusinesOwner)
+                .SelectMany(u => u.Businesses, (u, b) => new { u, b })
+                .SelectMany(x => x.b.BusinessDays, (x, d) => new { x.u, x.b, d })
+                .SelectMany(
+                    x => x.d.BusinessTimes.DefaultIfEmpty(),
+                    (x, bt) => new BusinessDayTimeDto
+                    {
+                        BusinessOwnerDayId = x.d.BusinessOwnerDay.Id,
+                        BusinessOwnerTimeId = bt != null ? bt.BusinessOwnerTime.Id : (long?)null,
+                        DayOfWeek = x.d.BusinessOwnerDay.DayOfWeek,
+                        From = bt.BusinessOwnerTime.From,
+                        To = bt.BusinessOwnerTime.To,
+                        IsReserved = bt.BusinessOwnerTime.IsReserved
+                    }
+                )
+                .ToListAsync();
+
+
+            if (profile != null)
+            {
+                profile.Comments = comments;
+                profile.TakingTurns = takingTurns;
+            }
+            return Result<BusinessOwnerProfileDto>.Success(profile);
         }
 
         public async Task<Result<string>> Login(UserLoginDto dto)
         {
-            var users = await repository.GetAllEntities();
+            var users = repository.GetAllEntities();
             var user = users.FirstOrDefault(x => x.Email == dto.Email);
             if (user != null && PasswordHasher.VerifyPassword(dto.Password, user.PasswordSalt, user.Password))
             {
@@ -123,7 +188,7 @@ namespace EasyTime.Application.Services
         {
             bool result = false;
 
-            var users = await repository.GetAllEntities();
+            var users = repository.GetAllEntities();
             var hashedPassword = PasswordHasher.HashPassword(dto.Password, out var salt);
             var user = new User()
             {
@@ -138,9 +203,9 @@ namespace EasyTime.Application.Services
                 Email = dto.Email,
                 RoleId = 3,
                 IsProfileComplete = false,
-                Description = null
+                AboutMe = null
             };
-            if(user.IsBusinesOwner == true)
+            if (user.IsBusinesOwner == true)
             {
                 user.RoleId = 2;
             }

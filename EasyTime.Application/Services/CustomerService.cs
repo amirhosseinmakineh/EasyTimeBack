@@ -31,12 +31,12 @@ namespace EasyTime.Application.Services
 
         public async Task<List<CustomerDto>> GetAllCustomer(Guid businessOwnerId)
         {
-            var users = await userRepository.GetAllEntities();
-            var business = await businessRepository.GetAllEntities();
-            var days = await dayRepository.GetAllEntities();
-            var times = await timeRepository.GetAllEntities();
-            var userBusinessOwner = await userBusinessOwnerRepository.GetAllEntities();
-            var reserves = await reserveRepository.GetAllEntities();
+            var users =  userRepository.GetAllEntities();
+            var business =  businessRepository.GetAllEntities();
+            var days =  dayRepository.GetAllEntities();
+            var times =  timeRepository.GetAllEntities();
+            var userBusinessOwner =  userBusinessOwnerRepository.GetAllEntities();
+            var reserves =  reserveRepository.GetAllEntities();
             var customers = await (from u in users
                             join ub in userBusinessOwner 
                                 on u.Id equals ub.UserId
@@ -71,9 +71,9 @@ namespace EasyTime.Application.Services
 
         public async Task SendSmsForCustomer(List<Guid> customerIdes)
         {
-            var users = await userRepository.GetAllEntities();
-            var reserves = await reserveRepository.GetAllEntities();
-            var times = await timeRepository.GetAllEntities();
+            var users =  userRepository.GetAllEntities();
+            var reserves =  reserveRepository.GetAllEntities();
+            var times =  timeRepository.GetAllEntities();
             var findUsersTimes = from u in users
                                  join r in reserves
                                     on u.Id equals r.UserId

@@ -17,7 +17,7 @@ namespace EasyTime.Application.Services
 
         public async Task<List<CategoryDto>> GetAllCategories()
         {
-            var result = await categoryRepository.GetAllEntities();
+            var result =  categoryRepository.GetAllEntities();
             return result.Where(x => x.IsDelete == false).Select(x => new CategoryDto()
             {
                 CategoryId = x.Id,

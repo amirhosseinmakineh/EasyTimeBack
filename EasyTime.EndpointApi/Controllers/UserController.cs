@@ -72,9 +72,9 @@ namespace EasyTime.EndpointApi.Controllers
         }
 
         [HttpGet("BusinessOwnerProfile")]
-        public IActionResult GetBusinessOwnerProfile(Guid id)
+        public async Task<IActionResult> GetBusinessOwnerProfile(Guid id)
         {
-             var result = userService.GetBusinessOwnerProfile(id);
+             var result = await userService.GetBusinessOwnerProfile(id);
             return Ok(result);
         }
     }

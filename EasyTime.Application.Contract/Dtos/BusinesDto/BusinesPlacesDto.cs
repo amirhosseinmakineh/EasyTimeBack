@@ -1,4 +1,5 @@
-﻿using EasyTime.Application.Contract.Dtos.Service;
+﻿using EasyTime.Application.Contract.Dtos.Comments;
+using EasyTime.Application.Contract.Dtos.Service;
 using EasyTime.Model.Enums;
 using EasyTime.Model.Models;
 
@@ -15,6 +16,7 @@ namespace EasyTime.Application.Contract.Dtos.BusinesDto
         public float UserRate { get; set; }
         public List<BusinessDayTimeDto> BusinessDayTimeDtos { get; set; }
         public List<ServiceDto> ServiceDtos { get; set; }
+        public List<CommentDto> Comments { get; set; }
     }
 
     public class BusinessDayTimeDto

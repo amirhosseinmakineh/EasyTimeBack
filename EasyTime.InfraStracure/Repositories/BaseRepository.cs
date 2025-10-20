@@ -25,7 +25,7 @@ namespace EasyTime.InfraStracure.Repositories
             entity.IsDelete = true;
         }
 
-        public async Task<IQueryable<Tentity>> GetAllEntities()
+        public  IQueryable<Tentity> GetAllEntities()
         {
             return context.Set<Tentity>().AsNoTracking();
         }

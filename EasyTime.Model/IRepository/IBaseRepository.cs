@@ -8,7 +8,7 @@ namespace EasyTime.Model.IRepository
         Task Update(Tentity tentity);
         Task Delete(Tkey id);
         Task<Tentity> GetById(Tkey id);
-        Task<IQueryable<Tentity>> GetAllEntities();
+        IQueryable<Tentity> GetAllEntities();
         Task SaveChanges();
         Task AddRange(IEnumerable<Tentity> tentities);
 

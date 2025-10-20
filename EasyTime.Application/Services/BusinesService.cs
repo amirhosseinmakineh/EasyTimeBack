@@ -57,13 +57,13 @@ namespace EasyTime.Application.Services
             decimal? maxAmount = null
         )
         {
-            var bq = await businessRepository.GetAllEntities();
-            var ratesQ = await _rateRepository.GetAllEntities();
-            var achQ = await _achivmentRepository.GetAllEntities();
-            var dayQ = await _businessOwnerDayRepository.GetAllEntities();
-            var timeQ = await _businessOwnerTimeRepository.GetAllEntities();
-            var busineseServices = await businessServiceRepository.GetAllEntities();
-            var services = await serviceRepository.GetAllEntities();
+            var bq = businessRepository.GetAllEntities();
+            var ratesQ = _rateRepository.GetAllEntities();
+            var achQ = _achivmentRepository.GetAllEntities();
+            var dayQ =  _businessOwnerDayRepository.GetAllEntities();
+            var timeQ =  _businessOwnerTimeRepository.GetAllEntities();
+            var busineseServices =  businessServiceRepository.GetAllEntities();
+            var services =  serviceRepository.GetAllEntities();
 
             var q = bq.Where(b => b.NeighberhoodId == neighborhoodId);
 
@@ -147,9 +147,9 @@ namespace EasyTime.Application.Services
 
         public async Task<BusinessPlaceDto> FilterBusinesByPlace(long? businesCityId, long? regionId)
         {
-            var cities = await cityRepository.GetAllEntities();
-            var regions = await regionRepository.GetAllEntities();
-            var neighborhoods = await neighberhoodRepository.GetAllEntities();
+            var cities =  cityRepository.GetAllEntities();
+            var regions =  regionRepository.GetAllEntities();
+            var neighborhoods =  neighberhoodRepository.GetAllEntities();
 
             var selectedCity = cities.FirstOrDefault(c => c.Id == businesCityId);
             if (selectedCity == null)
@@ -194,22 +194,22 @@ namespace EasyTime.Application.Services
 
         public async Task<BusinessDetailDto?> GetBusinessDetail(long businessId)
         {
-            var days = await businessOwnerDayRepository.GetAllEntities();
-            var times = await businessOwnerTimeRepository.GetAllEntities();
-            var businesServices = await _businessServiceRepository.GetAllEntities();
-            var comments = await _commentRepository.GetAllEntities();
-            var achievements = await _achivmentRepository.GetAllEntities();
-
-            var result = await (from b in await businessRepository.GetAllEntities()
-                                join c in await cityRepository.GetAllEntities()
+            var days =  businessOwnerDayRepository.GetAllEntities();
+            var times =  businessOwnerTimeRepository.GetAllEntities();
+            var businesServices =  _businessServiceRepository.GetAllEntities();
+            var comments =  _commentRepository.GetAllEntities();
+            var achievements =  _achivmentRepository.GetAllEntities();
+             
+            var result = await (from b in  businessRepository.GetAllEntities()
+                                join c in  cityRepository.GetAllEntities()
                                     on b.CityId equals c.Id
-                                join r in await regionRepository.GetAllEntities()
+                                join r in  regionRepository.GetAllEntities()
                                     on c.Id equals r.BusinesCityId
-                                join n in await neighberhoodRepository.GetAllEntities()
+                                join n in  neighberhoodRepository.GetAllEntities()
                                     on r.Id equals n.BusinesRegionId
-                                join u in await userRepository.GetAllEntities()
+                                join u in  userRepository.GetAllEntities()
                                     on b.BusinessOwnerId equals u.Id
-                                join bs in await _businessServiceRepository.GetAllEntities()
+                                join bs in  _businessServiceRepository.GetAllEntities()
                                     on b.Id equals bs.BusinessId
                                 join a in achievements
                                     on u.Id equals a.UserId
@@ -272,7 +272,7 @@ namespace EasyTime.Application.Services
             if (validateReserve.IsSuccess)
             {
                 var resreve = mapper.Map<Reserve>(dto);
-                var userEntities = await userRepository.GetAllEntities();
+                var userEntities =  userRepository.GetAllEntities();
                 var user = await userEntities.Where(x => x.IsBusinesOwner == false && x.RoleId == 3 && x.Id == dto.UserId).FirstOrDefaultAsync();
                 var businessOwner = await userEntities.Where(x => x.IsBusinesOwner == true && x.Id == dto.BusinessOwnerId).FirstOrDefaultAsync();
 
@@ -300,8 +300,8 @@ namespace EasyTime.Application.Services
 
         public async Task<Result<bool>> ValidateReserve(ReserveDto dto)
         {
-            var reserves = await reserveRepository.GetAllEntities();
-            var times = await businessOwnerTimeRepository.GetAllEntities();
+            var reserves =  reserveRepository.GetAllEntities();
+            var times =  businessOwnerTimeRepository.GetAllEntities();
 
             var hasConflict = await (from r in reserves
                                      join bt in times
@@ -315,7 +315,7 @@ namespace EasyTime.Application.Services
         }
         public async Task<List<CityDto>> GetAllCitiesAsync()
         {
-            var cities = await cityRepository.GetAllEntities();
+            var cities =  cityRepository.GetAllEntities();
 
             return cities.Select(c => new CityDto
             {
@@ -326,7 +326,7 @@ namespace EasyTime.Application.Services
 
         public async Task<List<CategoryDto>> GetAllCategories()
         {
-            var categories = await categoryRepository.
+            var categories =  categoryRepository.
                 GetAllEntities();
             var result = categories.Select(x => new CategoryDto()
             {
@@ -338,7 +338,7 @@ namespace EasyTime.Application.Services
 
         public async Task<List<ServiceDto>> GetServicseWithCategory(int categoryId)
         {
-            var services = await serviceRepository.
+            var services =  serviceRepository.
                  GetAllEntities();
             var result = services
                 .Where(x => x.CategoryId == categoryId).Select(x => new ServiceDto()
@@ -352,7 +352,7 @@ namespace EasyTime.Application.Services
 
         public async Task<decimal> GetBusinessServicesAmount()
         {
-            var busineses = await businessServiceRepository.GetAllEntities();
+            var busineses =  businessServiceRepository.GetAllEntities();
             var maxAmount = busineses.Max(x => x.Amount);
             return maxAmount;
 
@@ -360,10 +360,10 @@ namespace EasyTime.Application.Services
 
         public async Task<SearachDto> GetSelectedPlace(long cityId, long regionId, long neighberHoodId)
         {
-            var result = (from c in await cityRepository.GetAllEntities()
-                          join r in await regionRepository.GetAllEntities()
+            var result = (from c in  cityRepository.GetAllEntities()
+                          join r in  regionRepository.GetAllEntities()
                              on c.Id equals r.BusinesCityId
-                          join n in await neighberhoodRepository.GetAllEntities()
+                          join n in  neighberhoodRepository.GetAllEntities()
                              on r.Id equals n.BusinesRegionId
                           where c.IsDelete != false
                           select new SearachDto()
@@ -381,9 +381,9 @@ namespace EasyTime.Application.Services
 
         public async Task<List<BusinessServiceDto>> GetAllServices()
         {
-            var sList = await serviceRepository.GetAllEntities();
-            var bsList = await businessServiceRepository.GetAllEntities();
-            var bList = await businessRepository.GetAllEntities();
+            var sList =  serviceRepository.GetAllEntities();
+            var bsList =  businessServiceRepository.GetAllEntities();
+            var bList =  businessRepository.GetAllEntities();
             var result = (
                 from bs in bsList
                 where !bs.IsDelete

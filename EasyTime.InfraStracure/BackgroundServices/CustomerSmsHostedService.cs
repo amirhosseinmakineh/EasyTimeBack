@@ -10,10 +10,11 @@ namespace EasyTime.InfraStracure.BackgroundServices
         private readonly IBaseRepository<Guid, User> userRepository;
         private readonly ICustomerService customerService;
         private  Timer timer;
-        public CustomerSmsHostedService(IBaseRepository<Guid, User> userRepository, ICustomerService customerService)
+        public CustomerSmsHostedService(IBaseRepository<Guid, User> userRepository, ICustomerService customerService, Timer timer = null)
         {
             this.userRepository = userRepository;
             this.customerService = customerService;
+            this.timer = timer;
         }
 
         public void Dispose()
@@ -23,7 +24,7 @@ namespace EasyTime.InfraStracure.BackgroundServices
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var users = await userRepository.GetAllEntities();
+            var users =  userRepository.GetAllEntities();
             var userIdes = (from u in users
                             select u.Id).ToList();
             timer = new Timer(async state => await customerService.SendSmsForCustomer(userIdes), null, TimeSpan.Zero, TimeSpan.FromMinutes(5));

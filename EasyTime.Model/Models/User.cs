@@ -18,8 +18,11 @@ namespace EasyTime.Model.Models
         public string? ImageName { get; set; }
         public Guid? TokenForChangePassword { get; set; }
         public DateTime? ExpireChangePasswordToken { get; set; }
-        public string? Description { get; set; }
+        public string? AboutMe { get; set; }
         public bool IsProfileComplete { get; set; }
+        public string? Banner { get; set; } = string.Empty;
+        public string? WorkHistory { get; set; } = string.Empty;
+
         #region Relations
         public Role Role { get; set; }
         public ICollection<Business> Businesses { get; set; }
